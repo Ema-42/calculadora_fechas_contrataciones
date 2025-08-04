@@ -4,9 +4,8 @@ import { GeistMono } from 'geist/font/mono';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'CONTRATACIONES',
+  description: 'Creado por la Jefatura de TI del Gobierno Autónomo Municipal de Sucre',
 };
 
 export default function RootLayout({
@@ -16,6 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" type="image/x-icon" href="dolar.png" />
+      </head>
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans`}>
         {children}
       </body>

@@ -83,7 +83,7 @@ export default function ListadoRegistros({ registros }: ListadoRegistrosProps) {
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center justify-center w-full sm:w-auto"
           >
             <FileText className="mr-2" size={16} />
-            Imprimir Todos / PDF
+            Reporte PDF
           </button>
           <select
             value={registrosPorPagina}

@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Euro, Calendar, CalendarClock, CalendarCheck, Download } from "lucide-react" // Importar Download
+import { Euro, Calendar, CalendarClock, CalendarCheck, Download, DollarSign } from "lucide-react" // Importar Download
 import { useState } from "react"
 import { generateSingleRecordPdf } from "@/lib/pdf-utils" // Importar la utilidad de PDF
 
@@ -35,7 +35,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
         month: "2-digit",
         day: "2-digit",
         hour: "2-digit",
-        "aria-label": "2-digit",
+        minute: "2-digit",
         second: "2-digit",
       })
     }
@@ -44,8 +44,6 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
 
   const formatearMonto = (monto: number) => {
     return new Intl.NumberFormat("es-ES", {
-      style: "currency",
-      currency: "EUR",
       minimumFractionDigits: 2,
     }).format(monto)
   }
@@ -97,7 +95,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <Euro className="mr-2 text-gray-500" size={16} />
+                  <DollarSign  className="mr-2 text-gray-500" size={16} />
                   <p>
                     <strong className="text-gray-800">Monto:</strong> {formatearMonto(registro.monto)}
                   </p>
@@ -105,7 +103,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
               </div>
 
               <div className="border-t border-gray-200 pt-3 mt-3">
-                <h4 className="font-semibold text-gray-800 mb-2">Fechas Clave:</h4>
+                <h4 className="font-semibold text-gray-800 mb-2">Fechas:</h4>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-700">
                   <li className="flex items-center">
                     <CalendarCheck className="mr-2 text-gray-500" size={16} />

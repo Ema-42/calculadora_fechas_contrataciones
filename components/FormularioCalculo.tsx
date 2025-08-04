@@ -48,7 +48,7 @@ export default function FormularioCalculo({ onSubmit }: FormularioCalculoProps) 
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
         <Calculator className="mr-2 text-red-600" size={24} />
-        Nuevo Cálculo de Fechas
+        Nuevo Registro
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">

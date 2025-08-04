@@ -1,35 +1,52 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { Calendar, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react"
+import { useState, useRef, useEffect } from "react";
+import {
+  Calendar,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  CircleDollarSign,
+} from "lucide-react";
 
 export default function Navbar() {
-  const [mostrarCalendario, setMostrarCalendario] = useState(false)
-  const [fechaCalendario, setFechaCalendario] = useState(new Date())
-  const calendarRef = useRef<HTMLDivElement>(null) // Referencia al contenedor del calendario
+  const [mostrarCalendario, setMostrarCalendario] = useState(false);
+  const [fechaCalendario, setFechaCalendario] = useState(new Date());
+  const calendarRef = useRef<HTMLDivElement>(null); // Referencia al contenedor del calendario
 
   // Efecto para manejar clics fuera del calendario
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
-        setMostrarCalendario(false)
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        setMostrarCalendario(false);
       }
-    }
+    };
 
     if (mostrarCalendario) {
-      document.addEventListener("mousedown", handleClickOutside)
+      document.addEventListener("mousedown", handleClickOutside);
     } else {
-      document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [mostrarCalendario])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [mostrarCalendario]);
 
   const obtenerFechaActual = () => {
-    const fecha = new Date()
-    const dias = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    const fecha = new Date();
+    const dias = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
     const meses = [
       "enero",
       "febrero",
@@ -43,59 +60,59 @@ export default function Navbar() {
       "octubre",
       "noviembre",
       "diciembre",
-    ]
+    ];
 
-    const diaSemana = dias[fecha.getDay()]
-    const dia = fecha.getDate()
-    const mes = meses[fecha.getMonth()]
-    const año = fecha.getFullYear()
+    const diaSemana = dias[fecha.getDay()];
+    const dia = fecha.getDate();
+    const mes = meses[fecha.getMonth()];
+    const año = fecha.getFullYear();
 
-    return `${diaSemana} ${dia} de ${mes} de ${año}`
-  }
+    return `${diaSemana} ${dia} de ${mes} de ${año}`;
+  };
 
   const obtenerDiasDelMes = (fecha: Date) => {
-    const año = fecha.getFullYear()
-    const mes = fecha.getMonth()
+    const año = fecha.getFullYear();
+    const mes = fecha.getMonth();
 
     // Primer día del mes
-    const primerDia = new Date(año, mes, 1)
+    const primerDia = new Date(año, mes, 1);
     // Último día del mes
-    const ultimoDia = new Date(año, mes + 1, 0)
+    const ultimoDia = new Date(año, mes + 1, 0);
 
     // Día de la semana del primer día (0 = domingo)
-    const primerDiaSemana = primerDia.getDay()
+    const primerDiaSemana = primerDia.getDay();
 
-    const dias = []
+    const dias = [];
 
     // Agregar días vacíos al inicio
     for (let i = 0; i < primerDiaSemana; i++) {
-      dias.push(null)
+      dias.push(null);
     }
 
     // Agregar todos los días del mes
     for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
-      dias.push(dia)
+      dias.push(dia);
     }
 
-    return dias
-  }
+    return dias;
+  };
 
   const cambiarMes = (direccion: number) => {
     setFechaCalendario((prev) => {
-      const nuevaFecha = new Date(prev)
-      nuevaFecha.setMonth(prev.getMonth() + direccion)
-      return nuevaFecha
-    })
-  }
+      const nuevaFecha = new Date(prev);
+      nuevaFecha.setMonth(prev.getMonth() + direccion);
+      return nuevaFecha;
+    });
+  };
 
   const esHoy = (dia: number) => {
-    const hoy = new Date()
+    const hoy = new Date();
     return (
       hoy.getDate() === dia &&
       hoy.getMonth() === fechaCalendario.getMonth() &&
       hoy.getFullYear() === fechaCalendario.getFullYear()
-    )
-  }
+    );
+  };
 
   const meses = [
     "Enero",
@@ -110,18 +127,25 @@ export default function Navbar() {
     "Octubre",
     "Noviembre",
     "Diciembre",
-  ]
+  ];
 
-  const diasSemana = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"]
+  const diasSemana = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
   return (
     <nav className="bg-red-800 text-white shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <h1 className="text-xl font-bold tracking-wide">CALCULADORA DE FECHAS - CONTRATACIÓN</h1>
+          <div className="flex items-center space-x-4">
+            <CircleDollarSign  className="h-6 w-6 text-white" />
+            <h1 className="text-xl font-bold tracking-wide">
+              PROCESOS DE CONTRATACIÓN
+            </h1>
+          </div>
 
           <div className="flex items-center space-x-4">
-            <span className="hidden md:block text-sm">{obtenerFechaActual()}</span>
+            <span className="hidden md:block text-sm">
+              {obtenerFechaActual()}
+            </span>
 
             <div className="relative">
               <button
@@ -142,20 +166,30 @@ export default function Navbar() {
                       <CalendarDays size={16} className="mr-2" />
                       Calendario
                     </h3>
-                    <button onClick={() => setMostrarCalendario(false)} className="text-gray-500 hover:text-gray-700">
+                    <button
+                      onClick={() => setMostrarCalendario(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
                       ×
                     </button>
                   </div>
 
                   {/* Navegación del mes */}
                   <div className="flex items-center justify-between mb-4">
-                    <button onClick={() => cambiarMes(-1)} className="p-1 hover:bg-gray-100 rounded">
+                    <button
+                      onClick={() => cambiarMes(-1)}
+                      className="p-1 hover:bg-gray-100 rounded"
+                    >
                       <ChevronLeft size={16} />
                     </button>
                     <h4 className="font-medium">
-                      {meses[fechaCalendario.getMonth()]} {fechaCalendario.getFullYear()}
+                      {meses[fechaCalendario.getMonth()]}{" "}
+                      {fechaCalendario.getFullYear()}
                     </h4>
-                    <button onClick={() => cambiarMes(1)} className="p-1 hover:bg-gray-100 rounded">
+                    <button
+                      onClick={() => cambiarMes(1)}
+                      className="p-1 hover:bg-gray-100 rounded"
+                    >
                       <ChevronRight size={16} />
                     </button>
                   </div>
@@ -163,7 +197,10 @@ export default function Navbar() {
                   {/* Días de la semana */}
                   <div className="grid grid-cols-7 gap-1 mb-2">
                     {diasSemana.map((dia) => (
-                      <div key={dia} className="text-center text-xs font-medium text-gray-500 p-2">
+                      <div
+                        key={dia}
+                        className="text-center text-xs font-medium text-gray-500 p-2"
+                      >
                         {dia}
                       </div>
                     ))}
@@ -178,8 +215,8 @@ export default function Navbar() {
                           dia === null
                             ? ""
                             : esHoy(dia)
-                              ? "bg-red-600 text-white rounded-full font-bold"
-                              : "hover:bg-gray-100 rounded cursor-pointer"
+                            ? "bg-red-600 text-white rounded-full font-bold"
+                            : "hover:bg-gray-100 rounded cursor-pointer"
                         }`}
                       >
                         {dia}
@@ -188,7 +225,9 @@ export default function Navbar() {
                   </div>
 
                   <div className="mt-4 pt-3 border-t text-center">
-                    <p className="text-xs text-gray-500">Hoy: {obtenerFechaActual()}</p>
+                    <p className="text-xs text-gray-500">
+                      Hoy: {obtenerFechaActual()}
+                    </p>
                   </div>
                 </div>
               )}
@@ -197,8 +236,11 @@ export default function Navbar() {
         </div>
 
         {/* Fecha en móvil */}
-        <div className="md:hidden pb-3 text-sm text-center">{obtenerFechaActual()}</div>
+        <div className="md:hidden pb-3 text-sm text-center">
+          {obtenerFechaActual()}
+        </div>
       </div>
     </nav>
-  )
+  );
 }
+
