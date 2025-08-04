@@ -1,6 +1,13 @@
 import jsPDF from "jspdf"
-import "jspdf-autotable" // Importar para extender jsPDF
+import autoTable from "jspdf-autotable" // Cambio en la importación
 import type { Registro } from "@/app/page" // Importar el tipo Registro
+
+// Extender el tipo jsPDF para incluir autoTable
+declare module "jspdf" {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF
+  }
+}
 
 // Funciones de formateo (duplicadas para evitar dependencias circulares si Registro se moviera)
 const formatearFecha = (fecha: string, includeTime = false) => {
@@ -66,34 +73,37 @@ const getPdfTableData = (registros: Registro[]) => {
 const applyCommonTableStyles = (doc: jsPDF, startY: number) => {
   return {
     startY: startY,
-    theme: "grid",
+    theme: "grid" as const,
     headStyles: {
-      fillColor: [220, 38, 38], // red-600
-      textColor: [255, 255, 255],
-      fontStyle: "bold",
-      halign: "center",
+      fillColor: [220, 38, 38] as [number, number, number], // red-600
+      textColor: [255, 255, 255] as [number, number, number],
+      fontStyle: "bold" as const,
+      halign: "center" as const,
     },
     styles: {
       fontSize: 7,
       cellPadding: 1.5,
-      valign: "middle",
+      valign: "middle" as const,
     },
     columnStyles: {
-      0: { cellWidth: 10, halign: "center" }, // ID
+      0: { cellWidth: 10, halign: "center" as const }, // ID
       1: { cellWidth: 30 }, // Título
-      2: { cellWidth: 20, halign: "center" }, // Modalidad
-      3: { cellWidth: 20, halign: "right" }, // Monto
-      4: { cellWidth: 25, halign: "center" }, // F. Generación
-      5: { cellWidth: 20, halign: "center" }, // F. Inicio
-      6: { cellWidth: 20, halign: "center" }, // F. Publicación
-      7: { cellWidth: 20, halign: "center" }, // F. Apertura
-      8: { cellWidth: 20, halign: "center" }, // F. Adjudicación
-      9: { cellWidth: 20, halign: "center" }, // F. Presentación
-      10: { cellWidth: 20, halign: "center" }, // F. Firma
+      2: { cellWidth: 20, halign: "center" as const }, // Modalidad
+      3: { cellWidth: 20, halign: "right" as const }, // Monto
+      4: { cellWidth: 25, halign: "center" as const }, // F. Generación
+      5: { cellWidth: 20, halign: "center" as const }, // F. Inicio
+      6: { cellWidth: 20, halign: "center" as const }, // F. Publicación
+      7: { cellWidth: 20, halign: "center" as const }, // F. Apertura
+      8: { cellWidth: 20, halign: "center" as const }, // F. Adjudicación
+      9: { cellWidth: 20, halign: "center" as const }, // F. Presentación
+      10: { cellWidth: 20, halign: "center" as const }, // F. Firma
     },
     didDrawPage: (data: any) => {
-      // Footer
-      const str = "Página " + doc.internal.getNumberOfPages()
+      // Footer - Acceder correctamente a getNumberOfPages
+      const pageCount = (doc as any).internal.getNumberOfPages 
+        ? (doc as any).internal.getNumberOfPages() 
+        : doc.getNumberOfPages();
+      const str = "Página " + pageCount
       doc.setFontSize(8)
       doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10)
     },
@@ -265,7 +275,8 @@ export const generateMassRecordPdf = (
 
   const { tableColumn, tableRows } = getPdfTableData(registros)
 
-  doc.autoTable({
+  // Usar autoTable importado como función
+  autoTable(doc, {
     head: [tableColumn],
     body: tableRows,
     ...applyCommonTableStyles(doc, 35),
