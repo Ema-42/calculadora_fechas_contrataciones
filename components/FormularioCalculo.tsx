@@ -1,48 +1,64 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Calculator } from "lucide-react"
+import { useState } from "react";
+import { Calculator } from "lucide-react";
 
 interface FormularioCalculoProps {
   onSubmit: (datos: {
-    titulo: string
-    fechaInicio: string
-    monto: number
-    modalidad: string
-  }) => void
+    titulo: string;
+    fechaInicio: string;
+    monto: number;
+    modalidadId: number;
+  }) => void;
 }
 
-export default function FormularioCalculo({ onSubmit }: FormularioCalculoProps) {
-  const [titulo, setTitulo] = useState("")
-  const [fechaInicio, setFechaInicio] = useState("")
-  const [monto, setMonto] = useState("")
-  const [modalidad, setModalidad] = useState("")
+export default function FormularioCalculo({
+  onSubmit,
+}: FormularioCalculoProps) {
+  const [titulo, setTitulo] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [monto, setMonto] = useState("");
+  const [modalidad, setModalidad] = useState("");
 
-  const modalidades = ["ANPE menor", "ANPE mayor", "Contratación pública", "Contratación directa"]
+  const modalidades = [
+    "ANPE menor",
+    "ANPE mayor",
+    "Contratación pública",
+    "Contratación directa",
+  ];
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!fechaInicio || !monto || !modalidad) {
-      alert("Por favor complete todos los campos requeridos")
-      return
+      alert("Por favor complete todos los campos requeridos");
+      return;
     }
 
+    const tituloEnMayusculas = titulo.toUpperCase();
+
     onSubmit({
-      titulo,
+      titulo: tituloEnMayusculas,
       fechaInicio,
       monto: Number.parseFloat(monto),
-      modalidad,
-    })
+      modalidadId: 1,
+    });
 
     // Limpiar formulario
-    setTitulo("")
-    setFechaInicio("")
-    setMonto("")
-    setModalidad("")
-  }
+    setTitulo("");
+    setFechaInicio("");
+    setMonto("");
+    setModalidad("");
+
+    console.log("Formulario enviado:", {
+      titulo: tituloEnMayusculas,
+      fechaInicio,
+      monto,
+      modalidad,
+    });
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -54,7 +70,9 @@ export default function FormularioCalculo({ onSubmit }: FormularioCalculoProps) 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Título (Opcional)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Título (Opcional)
+            </label>
             <input
               type="text"
               value={titulo}
@@ -124,5 +142,6 @@ export default function FormularioCalculo({ onSubmit }: FormularioCalculoProps) 
         </div>
       </form>
     </div>
-  )
+  );
 }
+

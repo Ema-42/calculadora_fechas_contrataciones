@@ -95,9 +95,6 @@ export default function Footer() {
               <p className="text-sm text-red-200">
                 &copy; {currentYear} Todos los derechos reservados.
               </p>
-              <p className="text-xs text-red-300 mt-1">
-                Sistema de Gestión de Contrataciones
-              </p>
             </div>
           </div>
         </div>
