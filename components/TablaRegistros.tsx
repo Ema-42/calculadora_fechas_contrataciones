@@ -17,7 +17,7 @@ interface Registro {
   fechaGeneracion: string;
   titulo: string;
   fechaInicio: string;
-  modalidad: string;
+  modalidad: { id: number; nombre: string };
   monto: number;
   fechaPublicacion: string;
   fechaApertura: string;
@@ -105,7 +105,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
               </h3>
               <div className="w-full text-center">
                 <span className="inline-block text-sm py-1 font-semibold bg-gray-400 text-gray-00 w-full">
-                  {registro.modalidad}
+                  {registro.modalidad.nombre}
                 </span>
               </div>
             </div>

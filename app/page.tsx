@@ -12,7 +12,7 @@ export interface Registro {
   fechaGeneracion: string;
   titulo: string;
   fechaInicio: string;
-  modalidad: string;
+  modalidad: { id: number; nombre: string };
   monto: number;
   fechaPublicacion: string;
   fechaApertura: string;
@@ -140,7 +140,10 @@ export default function Home() {
   }) => {
     console.log("Datos recibidos en agregarRegistro:", datos);
 
-    const fechasCalculadas = calcularFechas(datos.fechaInicio, datos.modalidadId);
+    const fechasCalculadas = calcularFechas(
+      datos.fechaInicio,
+      datos.modalidadId
+    );
 
     const payload = {
       titulo: datos.titulo,

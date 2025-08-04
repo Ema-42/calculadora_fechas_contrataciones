@@ -7,29 +7,14 @@ export async function GET() {
   try {
     const registros = await prisma.contratacion.findMany({
       include: {
-        modalidad: true,
+        modalidad: true, // 👈 esto es clave
       },
       orderBy: {
         fechaGeneracion: "desc",
       },
     });
 
-    const registrosTransformados = registros.map((r) => ({
-      id: r.id,
-      titulo: r.titulo,
-      monto: r.monto,
-      fechaGeneracion: r.fechaGeneracion,
-      fechaInicio: r.fechaInicio,
-      fechaPublicacion: r.fechaPublicacion,
-      fechaApertura: r.fechaApertura,
-      fechaAdjudicacion: r.fechaAdjudicacion,
-      fechaPresentacionDocs: r.fechaPresentacionDocs,
-      fechaFirmaContratos: r.fechaFirmaContratos,
-      modalidadId: r.modalidadId,
-      modalidad: r.modalidad?.nombre || "N/A", // 🔥 nombre en lugar de objeto
-    }));
-
-    return NextResponse.json(registrosTransformados);
+    return NextResponse.json(registros);
   } catch (error: any) {
     console.error("Error exacto:", error?.message || error);
     return NextResponse.json(
@@ -39,8 +24,6 @@ export async function GET() {
   }
 }
 
- 
- 
 
 export async function POST(req: Request) {
   try {
