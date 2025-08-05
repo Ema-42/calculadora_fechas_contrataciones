@@ -41,6 +41,7 @@ export default function Home() {
   const [modalidades, setModalidades] = useState<Modalidad[]>([]);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchRegistros = async () => {
@@ -48,7 +49,6 @@ export default function Home() {
         const res = await fetch("/api/contrataciones");
         if (!res.ok) throw new Error("Error al cargar registros");
         const data = await res.json();
-        console.log("Contrataciones desde API:", data);
         setRegistros(data);
       } catch (error: any) {
         console.error("Error al obtener registros:", error?.message || error);
@@ -66,7 +66,6 @@ export default function Home() {
         const res = await fetch("/api/modalidades");
         if (!res.ok) throw new Error("Error al cargar modalidades");
         const data = await res.json();
-        console.log("Modalidades desde API:", data);
         setModalidades(data);
       } catch (error: any) {
         console.error("Error al obtener registros:", error?.message || error);
@@ -84,7 +83,6 @@ export default function Home() {
         const res = await fetch("/api/feriados");
         if (!res.ok) throw new Error("Error al cargar feriados");
         const data = await res.json();
-        console.log("Feriados desde API:", data);
         setFeriados(data);
       } catch (error: any) {
         console.error("Error al obtener registros:", error?.message || error);
@@ -96,44 +94,7 @@ export default function Home() {
     fetchFeriados();
   }, []);
 
-  /*   // Cargar datos del localStorage al iniciar
-  useEffect(() => {
-    const savedRegistros = localStorage.getItem("registros-contratacion");
-    const savedNextId = localStorage.getItem("next-id");
-    const savedFeriados = localStorage.getItem("feriados-contratacion");
-
-    if (savedRegistros) {
-      setRegistros(JSON.parse(savedRegistros));
-    }
-    if (savedNextId) {
-      setNextId(Number.parseInt(savedNextId));
-    }
-    if (savedFeriados) {
-      setFeriados(JSON.parse(savedFeriados));
-    } else {
-      // Feriados por defecto (gestionados desde el código)
-      const feriadosDefault = [
-        { id: 1, fecha: "2025-01-01", nombre: "Año Nuevo" },
-        { id: 2, fecha: "2025-01-06", nombre: "Día de Reyes" },
-        { id: 3, fecha: "2025-04-18", nombre: "Viernes Santo" },
-        { id: 4, fecha: "2025-05-01", nombre: "Día del Trabajador" },
-        { id: 5, fecha: "2025-08-15", nombre: "Asunción de la Virgen" },
-        { id: 6, fecha: "2025-10-12", nombre: "Día de la Hispanidad" },
-        { id: 7, fecha: "2025-11-01", nombre: "Todos los Santos" },
-        { id: 8, fecha: "2025-12-06", nombre: "Día de la Constitución" },
-        { id: 9, fecha: "2025-12-08", nombre: "Inmaculada Concepción" },
-        { id: 10, fecha: "2025-12-25", nombre: "Navidad" },
-      ];
-      setFeriados(feriadosDefault);
-    }
-  }, []);
-
-  // Guardar en localStorage cuando cambien los datos
-  useEffect(() => {
-    localStorage.setItem("registros-contratacion", JSON.stringify(registros));
-    localStorage.setItem("next-id", nextId.toString());
-    localStorage.setItem("feriados-contratacion", JSON.stringify(feriados)); // Guardar feriados también
-  }, [registros, nextId, feriados]); // Asegurarse de que feriados esté en las dependencias */
+  
 
   const esFeriado = (fecha: Date) => {
     const fechaStr = fecha.toISOString().split("T")[0];
@@ -186,8 +147,6 @@ export default function Home() {
     monto: number;
     modalidadId: any;
   }) => {
-    console.log("Datos recibidos en agregarRegistro:", datos);
-
     const fechasCalculadas = calcularFechas(
       datos.fechaInicio,
       datos.modalidadId
@@ -242,44 +201,21 @@ export default function Home() {
   }
 
   const calcularFechas = (fechaInicio: string, modalidadId: number) => {
-    const fecha = parseFechaLocal(fechaInicio); // <-- fecha local correcta
-    console.log("Fecha de inicio:", fecha);
-
-    console.log(modalidadId + " modalidadId");
-
+    const fecha = parseFechaLocal(fechaInicio); 
+    const modalidad = modalidades.find(
+      (m) => Number(m.id) === Number(modalidadId)
+    );
+    if (!modalidad) {
+      throw new Error("Modalidad no encontrada para el ID: " + modalidadId);
+    }
     // Configuración de días hábiles por modalidad
-    const configuracion = {
-      1: {
-        publicacion: 4,
-        apertura: 8,
-        adjudicacion: 12,
-        presentacion: 16,
-        firma: 20,
-      },
-      "ANPE mayor": {
-        publicacion: 7,
-        apertura: 14,
-        adjudicacion: 21,
-        presentacion: 28,
-        firma: 35,
-      },
-      "Contratación pública": {
-        publicacion: 10,
-        apertura: 20,
-        adjudicacion: 30,
-        presentacion: 40,
-        firma: 50,
-      },
-      "Contratación directa": {
-        publicacion: 2,
-        apertura: 4,
-        adjudicacion: 6,
-        presentacion: 8,
-        firma: 10,
-      },
+    const config = {
+      publicacion: Number(modalidad.publicacion),
+      apertura: Number(modalidad.apertura),
+      adjudicacion: Number(modalidad.adjudicacion),
+      presentacion: Number(modalidad.presentacion),
+      firma: Number(modalidad.firma),
     };
-
-    const config = configuracion[modalidadId as keyof typeof configuracion];
 
     return {
       fechaPublicacion: agregarDiasHabiles(fecha, config.publicacion),
@@ -300,7 +236,7 @@ export default function Home() {
           onSubmit={agregarRegistro}
           modalidades={modalidades}
         />
-        <ListadoRegistros registros={registros} />
+        <ListadoRegistros registros={registros} loading={isLoading} />
       </main>
       {showToast && (
         <Toast message={toastMessage} onClose={() => setShowToast(false)} />

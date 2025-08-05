@@ -7,6 +7,7 @@ import { Search, FileText } from "lucide-react";
 import TablaRegistros from "./TablaRegistros";
 import Paginacion from "./Paginacion";
 import ModalImprimirTodos from "./ModalImprimirTodos";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface Registro {
   id: number;
@@ -24,9 +25,13 @@ interface Registro {
 
 interface ListadoRegistrosProps {
   registros: Registro[];
+  loading: boolean;
 }
 
-export default function ListadoRegistros({ registros }: ListadoRegistrosProps) {
+export default function ListadoRegistros({
+  registros,
+  loading,
+}: ListadoRegistrosProps) {
   const [busqueda, setBusqueda] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const [mostrarModalPDF, setMostrarModalPDF] = useState(false);
@@ -114,7 +119,9 @@ export default function ListadoRegistros({ registros }: ListadoRegistrosProps) {
         </div>
       </div>
 
-      {registrosFiltrados.length === 0 ? (
+      {loading && registros.length === 0 ? (
+        <LoadingSpinner mensaje="Cargando registros..." /> 
+      ) : registrosFiltrados.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
             {busqueda
@@ -125,7 +132,6 @@ export default function ListadoRegistros({ registros }: ListadoRegistrosProps) {
       ) : (
         <>
           <TablaRegistros registros={registrosPaginados} />
-
           {totalPaginas > 1 && registrosPorPagina !== "all" && (
             <Paginacion
               paginaActual={paginaActual}
