@@ -48,6 +48,17 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
     return fechaObj.toLocaleDateString("es-ES");
   };
 
+  const formatearFechaSimple = (fecha: string) => {
+    // Eliminar la "Z" para evitar conversión de zona horaria
+    const fechaSinZ = fecha.replace(/Z$/, "");
+    const fechaObj = new Date(fechaSinZ);
+    return fechaObj.toLocaleDateString("es-BO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   const formatearMonto = (monto: number) => {
     return new Intl.NumberFormat("en", {
       minimumFractionDigits: 2,
@@ -104,27 +115,31 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                 {registro.titulo || "Sin Título"}
               </h3>
               <div className="w-full text-center">
-                <span className="inline-block text-sm py-1 font-semibold bg-gray-400 text-gray-00 w-full">
-                  {registro.modalidad.nombre}
+                <span className="inline-block text-sm py-1  font-semibold bg-blue-700/20 text-blue-950 w-full">
+                  MODALIDAD: {registro.modalidad.nombre}
                 </span>
               </div>
             </div>
 
             {/* Sección de Contenido de la Tarjeta */}
-            <div className="p-4 pt-0">
+            <div className="p-4 pt-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700 mb-3">
                 <div className="flex items-center">
                   <Calendar className="mr-2 text-gray-500" size={16} />
                   <p>
-                    <strong className="text-gray-800">F. Inicio:</strong>{" "}
-                    {formatearFecha(registro.fechaInicio)}
+                    <strong className="text-gray-800">Fecha de Inicio:</strong>{" "}
+                    <span className="ml-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                      {formatearFechaSimple(registro.fechaInicio)}
+                    </span>
                   </p>
                 </div>
                 <div className="flex items-center">
                   <DollarSign className="mr-2 text-gray-500" size={16} />
                   <p>
                     <strong className="text-gray-800">Monto:</strong>{" "}
-                    {formatearMonto(registro.monto)}
+                    <span className="ml-2 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold">
+                      {formatearMonto(registro.monto)} BS.
+                    </span>
                   </p>
                 </div>
               </div>
@@ -134,34 +149,44 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-700">
                   <li className="flex items-center">
                     <CalendarCheck className="mr-2 text-gray-500" size={16} />
-                    <strong className="text-gray-800">Publicación:</strong>{" "}
-                    {formatearFecha(registro.fechaPublicacion)}
+                    <strong className="text-gray-800">Publicación:</strong>
+                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                      {formatearFechaSimple(registro.fechaPublicacion)}
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CalendarCheck className="mr-2 text-gray-500" size={16} />
                     <strong className="text-gray-800">Apertura:</strong>{" "}
-                    {formatearFecha(registro.fechaApertura)}
+                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                      {formatearFechaSimple(registro.fechaApertura)}
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CalendarCheck className="mr-2 text-gray-500" size={16} />
                     <strong className="text-gray-800">
                       Adjudicación:
                     </strong>{" "}
-                    {formatearFecha(registro.fechaAdjudicacion)}
+                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                      {formatearFechaSimple(registro.fechaAdjudicacion)}
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CalendarCheck className="mr-2 text-gray-500" size={16} />
                     <strong className="text-gray-800">
                       Presentación Docs:
                     </strong>{" "}
-                    {formatearFecha(registro.fechaPresentacionDocs)}
+                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                      {formatearFechaSimple(registro.fechaPresentacionDocs)}
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CalendarCheck className="mr-2 text-gray-500" size={16} />
                     <strong className="text-gray-800">
-                      Firma Contratos:
+                      Firma Contrato:
                     </strong>{" "}
-                    {formatearFecha(registro.fechaFirmaContratos)}
+                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                      {formatearFechaSimple(registro.fechaFirmaContratos)}
+                    </span>
                   </li>
                 </ul>
               </div>

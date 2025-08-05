@@ -4,6 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import { Calculator } from "lucide-react";
+import { Modalidad } from "@/app/page";
 
 interface FormularioCalculoProps {
   onSubmit: (datos: {
@@ -12,22 +13,18 @@ interface FormularioCalculoProps {
     monto: number;
     modalidadId: number;
   }) => void;
+
+  modalidades: Modalidad[];
 }
 
 export default function FormularioCalculo({
   onSubmit,
+  modalidades,
 }: FormularioCalculoProps) {
   const [titulo, setTitulo] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
   const [monto, setMonto] = useState("");
   const [modalidad, setModalidad] = useState("");
-
-  const modalidades = [
-    "ANPE menor",
-    "ANPE mayor",
-    "Contratación pública",
-    "Contratación directa",
-  ];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +40,7 @@ export default function FormularioCalculo({
       titulo: tituloEnMayusculas,
       fechaInicio,
       monto: Number.parseFloat(monto),
-      modalidadId: 1,
+      modalidadId: Number(modalidad),
     });
 
     // Limpiar formulario
@@ -123,8 +120,8 @@ export default function FormularioCalculo({
             >
               <option value="">Seleccionar modalidad</option>
               {modalidades.map((mod) => (
-                <option key={mod} value={mod}>
-                  {mod}
+                <option key={mod.id} value={mod.id}>
+                  {mod.nombre}
                 </option>
               ))}
             </select>

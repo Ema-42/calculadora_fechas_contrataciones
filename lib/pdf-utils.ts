@@ -26,6 +26,18 @@ const formatearFecha = (fecha: string, includeTime = false) => {
   return fechaObj.toLocaleDateString("es-ES");
 };
 
+ const formatearFechaSimple = (fecha: string) => {
+  // Eliminar la "Z" para evitar conversión de zona horaria
+  const fechaSinZ = fecha.replace(/Z$/, "");
+  const fechaObj = new Date(fechaSinZ);
+  return fechaObj.toLocaleDateString("es-BO", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
+
 const formatearMonto = (monto: number) => {
   return new Intl.NumberFormat("en", {
     minimumFractionDigits: 2,
@@ -55,15 +67,15 @@ const getPdfTableData = (registros: Registro[]) => {
     const registroData = [
       registro.id,
       registro.titulo || "N/A",
-      registro.modalidad,
+      registro.modalidad.nombre || "N/A",
       formatearMonto(registro.monto),
       formatearFecha(registro.fechaGeneracion, true),
-      formatearFecha(registro.fechaInicio),
-      formatearFecha(registro.fechaPublicacion),
-      formatearFecha(registro.fechaApertura),
-      formatearFecha(registro.fechaAdjudicacion),
-      formatearFecha(registro.fechaPresentacionDocs),
-      formatearFecha(registro.fechaFirmaContratos),
+      formatearFechaSimple(registro.fechaInicio),
+      formatearFechaSimple(registro.fechaPublicacion),
+      formatearFechaSimple(registro.fechaApertura),
+      formatearFechaSimple(registro.fechaAdjudicacion),
+      formatearFechaSimple(registro.fechaPresentacionDocs),
+      formatearFechaSimple(registro.fechaFirmaContratos),
     ];
     tableRows.push(registroData);
   });
@@ -125,126 +137,141 @@ export const generateSingleRecordPdf = (
   let y = 20; // Posición Y inicial
 
   // Header Section
-  doc.setFillColor(220, 38, 38); // red-600
-  doc.rect(0, 0, doc.internal.pageSize.width, 30, "F"); // Background rectangle
   doc.setFontSize(18);
-  doc.setTextColor(255, 255, 255); // White
-  doc.text(
-    "Detalle de Registro de Contratación",
-    doc.internal.pageSize.width / 2,
-    18,
-    { align: "center" }
-  );
-  y = 40; // Start content below header
+  doc.setTextColor(30, 30, 30);
+  const title = 'DETALLE DE REGISTRO DE CONTRATACIÓN';
+  const titleX = doc.internal.pageSize.width / 2;
+  doc.text(title, titleX, y, { align: 'center' });
+    // Subrayado decorativo
+  const titleWidth = doc.getTextWidth(title);
+  const lineX1 = titleX - titleWidth / 2;
+  const lineX2 = titleX + titleWidth / 2;
+  doc.setDrawColor(70, 70, 70);
+  doc.setLineWidth(0.5);
+  doc.line(lineX1, y + 2, lineX2, y + 2);
+  y += 15;
 
-  // Basic Info Section
+  
+  // === Información Básica ===
   doc.setFontSize(12);
-  doc.setTextColor(50, 50, 50); // Dark gray
+  doc.setTextColor(50, 50, 50);
   doc.text(`ID: ${registro.id}`, 14, y);
-  doc.text(
-    `Fecha de Generación: ${formatearFecha(registro.fechaGeneracion, true)}`,
-    doc.internal.pageSize.width - 14,
-    y,
-    {
-      align: "right",
-    }
-  );
+
+  const fechaGen = formatearFecha(registro.fechaGeneracion, true);
+  doc.text(`Fecha de Generación: ${fechaGen}`, doc.internal.pageSize.width - 14, y, {
+    align: 'right',
+  });
   y += 10;
 
+  // === Título del registro (centrado, en mayúsculas) ===
   doc.setFontSize(16);
-  doc.setTextColor(20, 20, 20); // Even darker gray
-  const titulo = (registro.titulo || "Sin Título").toUpperCase();
-  doc.text(titulo, doc.internal.pageSize.width / 2, y, { align: "center" });
+  doc.setTextColor(20, 20, 20);
+  const titulo = (registro.titulo || 'Sin Título').toUpperCase();
+  doc.text(titulo, doc.internal.pageSize.width / 2, y, { align: 'center' });
+  y += 10;
 
-  y += 8;
-
+  // === Modalidad (centrada) ===
   doc.setFontSize(12);
-  doc.setTextColor(80, 80, 80); // Medium gray
-  doc.text(
-    `Modalidad: ${registro.modalidad}`,
-    doc.internal.pageSize.width / 2,
-    y,
-    { align: "center" }
-  );
+  doc.setTextColor(80, 80, 80);
+  const modalidad = registro.modalidad.nombre || 'N/A';
+  doc.text(`Modalidad: ${modalidad}`, doc.internal.pageSize.width / 2, y, {
+    align: 'center',
+  });
   y += 15;
 
   // Separator
   doc.setDrawColor(200, 200, 200); // Light gray
   doc.line(14, y, doc.internal.pageSize.width - 14, y);
   y += 10;
-
-  // Key Dates and Amount Section
+// === Información Clave (Inicio y Monto) ===
   doc.setFontSize(14);
   doc.setTextColor(20, 20, 20);
-  doc.text("Información Clave:", 14, y);
+  doc.text('Información Clave:', 14, y);
   y += 8;
 
   doc.setFontSize(12);
   doc.setTextColor(80, 80, 80);
-  doc.text(`Fecha de Inicio: ${formatearFecha(registro.fechaInicio)}`, 14, y);
-  doc.text(
-    `Monto: ${formatearMonto(registro.monto)}`,
-    doc.internal.pageSize.width - 14,
-    y,
-    { align: "right" }
-  );
+  const fechaInicio = formatearFechaSimple(registro.fechaInicio);
+  doc.text(`Fecha de Inicio: ${fechaInicio}`, 14, y);
+
+  const monto = formatearMonto(registro.monto);
+  doc.text(`Monto: ${monto} BS.`, doc.internal.pageSize.width - 14, y, {
+    align: 'right',
+  });
   y += 15;
 
-  // Separator
-  doc.setDrawColor(200, 200, 200); // Light gray
+  // === Separador ===
+  doc.setDrawColor(200, 200, 200);
   doc.line(14, y, doc.internal.pageSize.width - 14, y);
-  y += 10;
+  y += 15;
 
   // Process Dates Section
-  doc.setFontSize(14);
-  doc.setTextColor(20, 20, 20);
-  doc.text("Fechas del Proceso:", 14, y);
-  y += 8;
+  
+  // === Fechas del Proceso (en tabla elegante) ===
+ doc.setFontSize(14);
+doc.setTextColor(20, 20, 20);
+const procesoTitle = 'Fechas del Proceso:';
+doc.text(procesoTitle, doc.internal.pageSize.width / 2, y, { align: 'center' });
+y += 10;
 
-  doc.setFontSize(10);
-  doc.setTextColor(80, 80, 80);
-  const startX = 14;
-  const colWidth = (doc.internal.pageSize.width - 2 * startX) / 2; // Two columns
-  let currentX = startX;
-  let currentY = y;
-  const lineHeight = 7;
+const dates = [
+  ['Publicación', formatearFechaSimple(registro.fechaPublicacion)],
+  ['Apertura', formatearFechaSimple(registro.fechaApertura)],
+  ['Adjudicación', formatearFechaSimple(registro.fechaAdjudicacion)],
+  ['Presentación Docs', formatearFechaSimple(registro.fechaPresentacionDocs)],
+  ['Firma Contratos', formatearFechaSimple(registro.fechaFirmaContratos)],
+];
 
-  const dates = [
-    { label: "Publicación", date: registro.fechaPublicacion },
-    { label: "Apertura", date: registro.fechaApertura },
-    { label: "Adjudicación", date: registro.fechaAdjudicacion },
-    { label: "Presentación Docs", date: registro.fechaPresentacionDocs },
-    { label: "Firma Contratos", date: registro.fechaFirmaContratos },
-  ];
+// Configuración para centrar la tabla
+const pageWidth = doc.internal.pageSize.width;
+const tableWidth = 140; // Ancho deseado de la tabla en mm
+const marginX = (pageWidth - tableWidth) / 2; // Margen izquierdo para centrar
 
-  dates.forEach((item, index) => {
-    if (index % 2 === 0) {
-      currentX = startX;
-      if (index > 0) currentY += lineHeight;
-    } else {
-      currentX = startX + colWidth;
-    }
-    doc.text(`${item.label}: ${formatearFecha(item.date)}`, currentX, currentY);
-  });
-  y = currentY + lineHeight + 10; // Update y for next section
+autoTable(doc, {
+  head: [['Etapa', 'Fecha']],
+  body: dates,
+  startY: y,
+  theme: 'grid',
+  styles: {
+    fontSize: 10,
+    cellPadding: 3,
+    font: 'helvetica',
+    halign: 'left', // Alineación del texto dentro de las celdas
+  },
+  headStyles: {
+    fillColor: [220, 38, 38],
+    textColor: [255, 255, 255],
+    fontSize: 11,
+    fontStyle: 'bold',
+    halign: 'center',
+  },
+  columnStyles: {
+    0: { cellWidth: 65, halign: 'left' },
+    1: { cellWidth: 75, halign: 'center' }, // Fechas centradas
+  },
+  margin: { left: marginX, right: marginX }, // Centrado mediante margen
+  // Asegura que no se fuerce a 100%
+  tableWidth: tableWidth,
+});
 
-  // Footer
+const finalY = (doc as any).lastAutoTable.finalY + 15;
+y = finalY;
+
+  // === Footer ===
   doc.setFontSize(8);
-  doc.setTextColor(150, 150, 150); // Lighter gray
-  doc.text(
-    "Generado por Calculadora de Fechas - Contratación",
-    doc.internal.pageSize.width / 2,
-    doc.internal.pageSize.height - 10,
-    { align: "center" }
-  );
+  doc.setTextColor(120, 120, 120);
+  const footerText =
+    'Generado por Herramienta de Gestión de Contratación - Desarrollado por la Jefatura de TI del Gobierno Autónomo Municipal de Sucre';
+  doc.text(footerText, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, {
+    align: 'center',
+  });
 
-  if (action === "download") {
+  // === Acción: Descargar o Imprimir ===
+  if (action === 'download') {
     doc.save(`registro_${registro.id}.pdf`);
   } else {
-    // This branch should ideally not be reached if the print button is removed
-    // but keeping it for robustness in case of future changes.
-    const pdfDataUri = doc.output("datauristring");
-    const newWindow = window.open("", "_blank");
+    const pdfDataUri = doc.output('datauristring');
+    const newWindow = window.open('', '_blank');
     if (newWindow) {
       newWindow.document.write(`
         <html>

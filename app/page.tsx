@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import FormularioCalculo from "@/components/FormularioCalculo";
 import ListadoRegistros from "@/components/ListadoRegistros";
 import Toast from "@/components/Toast";
-import Footer from "@/components/Footer"; // Importar el nuevo Footer
+import Footer from "@/components/Footer";
 
 export interface Registro {
   id: number;
@@ -26,11 +26,19 @@ export interface Feriado {
   fecha: string;
   nombre: string;
 }
-
+export interface Modalidad {
+  id: number;
+  nombre: string;
+  publicacion: string;
+  apertura: string;
+  adjudicacion: string;
+  presentacion: string;
+  firma: string;
+}
 export default function Home() {
   const [registros, setRegistros] = useState<Registro[]>([]);
   const [feriados, setFeriados] = useState<Feriado[]>([]);
-  const [nextId, setNextId] = useState(1);
+  const [modalidades, setModalidades] = useState<Modalidad[]>([]);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -40,7 +48,7 @@ export default function Home() {
         const res = await fetch("/api/contrataciones");
         if (!res.ok) throw new Error("Error al cargar registros");
         const data = await res.json();
-        console.log("Datos recibidos desde API:", data);
+        console.log("Contrataciones desde API:", data);
         setRegistros(data);
       } catch (error: any) {
         console.error("Error al obtener registros:", error?.message || error);
@@ -52,7 +60,43 @@ export default function Home() {
     fetchRegistros();
   }, []);
 
-  // Cargar datos del localStorage al iniciar
+  useEffect(() => {
+    const fetchModalidades = async () => {
+      try {
+        const res = await fetch("/api/modalidades");
+        if (!res.ok) throw new Error("Error al cargar modalidades");
+        const data = await res.json();
+        console.log("Modalidades desde API:", data);
+        setModalidades(data);
+      } catch (error: any) {
+        console.error("Error al obtener registros:", error?.message || error);
+        setToastMessage("Hubo un error al cargar los registros.");
+        setShowToast(true);
+      }
+    };
+
+    fetchModalidades();
+  }, []);
+
+  useEffect(() => {
+    const fetchFeriados = async () => {
+      try {
+        const res = await fetch("/api/feriados");
+        if (!res.ok) throw new Error("Error al cargar feriados");
+        const data = await res.json();
+        console.log("Feriados desde API:", data);
+        setFeriados(data);
+      } catch (error: any) {
+        console.error("Error al obtener registros:", error?.message || error);
+        setToastMessage("Hubo un error al cargar los registros.");
+        setShowToast(true);
+      }
+    };
+
+    fetchFeriados();
+  }, []);
+
+  /*   // Cargar datos del localStorage al iniciar
   useEffect(() => {
     const savedRegistros = localStorage.getItem("registros-contratacion");
     const savedNextId = localStorage.getItem("next-id");
@@ -89,11 +133,14 @@ export default function Home() {
     localStorage.setItem("registros-contratacion", JSON.stringify(registros));
     localStorage.setItem("next-id", nextId.toString());
     localStorage.setItem("feriados-contratacion", JSON.stringify(feriados)); // Guardar feriados también
-  }, [registros, nextId, feriados]); // Asegurarse de que feriados esté en las dependencias
+  }, [registros, nextId, feriados]); // Asegurarse de que feriados esté en las dependencias */
 
   const esFeriado = (fecha: Date) => {
     const fechaStr = fecha.toISOString().split("T")[0];
-    return feriados.some((feriado) => feriado.fecha === fechaStr);
+    return feriados.some((feriado) => {
+      const feriadoStr = new Date(feriado.fecha).toISOString().split("T")[0];
+      return feriadoStr === fechaStr;
+    });
   };
 
   const esFinDeSemana = (fecha: Date) => {
@@ -102,6 +149,7 @@ export default function Home() {
   };
 
   const esDiaHabil = (fecha: Date) => {
+    esFeriado(fecha) && console.log(`Fecha ${fecha} es feriado`);
     return !esFinDeSemana(fecha) && !esFeriado(fecha);
   };
 
@@ -147,17 +195,25 @@ export default function Home() {
 
     const payload = {
       titulo: datos.titulo,
-      fechaInicio: new Date(datos.fechaInicio), // 👈 corregido
+      fechaInicio: new Date(datos.fechaInicio).toISOString(),
       fechaGeneracion: new Date().toISOString(),
-      //modalidad: datos.modalidad,
-      modalidadId: 1,
+      modalidadId: datos.modalidadId,
       monto: datos.monto,
-      fechaPublicacion: new Date(fechasCalculadas.fechaPublicacion), // 👈 corregido
-      fechaApertura: new Date(fechasCalculadas.fechaApertura),
-      fechaAdjudicacion: new Date(fechasCalculadas.fechaAdjudicacion),
-      fechaPresentacionDocs: new Date(fechasCalculadas.fechaPresentacionDocs),
-      fechaFirmaContratos: new Date(fechasCalculadas.fechaFirmaContratos),
+      fechaPublicacion: new Date(
+        fechasCalculadas.fechaPublicacion
+      ).toISOString(),
+      fechaApertura: new Date(fechasCalculadas.fechaApertura).toISOString(),
+      fechaAdjudicacion: new Date(
+        fechasCalculadas.fechaAdjudicacion
+      ).toISOString(),
+      fechaPresentacionDocs: new Date(
+        fechasCalculadas.fechaPresentacionDocs
+      ).toISOString(),
+      fechaFirmaContratos: new Date(
+        fechasCalculadas.fechaFirmaContratos
+      ).toISOString(),
     };
+    console.log("Payload a enviar:", payload);
 
     try {
       const res = await fetch("/api/contrataciones", {
@@ -179,8 +235,17 @@ export default function Home() {
     }
   };
 
+  function parseFechaLocal(fechaStr: string): Date {
+    const [year, month, day] = fechaStr.split("-").map(Number);
+    // Nota: mes es 0-based en JS Date (enero = 0)
+    return new Date(year, month - 1, day);
+  }
+
   const calcularFechas = (fechaInicio: string, modalidadId: number) => {
-    const fecha = new Date(fechaInicio);
+    const fecha = parseFechaLocal(fechaInicio); // <-- fecha local correcta
+    console.log("Fecha de inicio:", fecha);
+
+    console.log(modalidadId + " modalidadId");
 
     // Configuración de días hábiles por modalidad
     const configuracion = {
@@ -231,7 +296,10 @@ export default function Home() {
       {/* Fondo más gris */}
       <Navbar />
       <main className="container mx-auto px-4 py-6 space-y-8">
-        <FormularioCalculo onSubmit={agregarRegistro} />
+        <FormularioCalculo
+          onSubmit={agregarRegistro}
+          modalidades={modalidades}
+        />
         <ListadoRegistros registros={registros} />
       </main>
       {showToast && (

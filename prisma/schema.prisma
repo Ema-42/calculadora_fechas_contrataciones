@@ -3,34 +3,39 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Modalidad {
-  id          Int              @id @default(autoincrement())
-  nombre      String           @unique
+  id             Int            @id @default(autoincrement())
+  nombre         String
+  publicacion    String
+  apertura       String
+  adjudicacion   String
+  presentacion   String
+  firma          String
   contrataciones Contratacion[]
 }
 
 model Contratacion {
-  id                     Int       @id @default(autoincrement())
-  titulo                 String
-  monto                  Float
-  fechaGeneracion        DateTime
-  fechaInicio            DateTime
-  fechaPublicacion       DateTime
-  fechaApertura          DateTime
-  fechaAdjudicacion      DateTime
-  fechaPresentacionDocs  DateTime
-  fechaFirmaContratos    DateTime
+  id                    Int      @id @default(autoincrement())
+  titulo                String
+  monto                 Float
+  fechaGeneracion       DateTime
+  fechaInicio           DateTime
+  fechaPublicacion      DateTime
+  fechaApertura         DateTime
+  fechaAdjudicacion     DateTime
+  fechaPresentacionDocs DateTime
+  fechaFirmaContratos   DateTime
 
   modalidadId Int
-  modalidad   Modalidad  @relation(fields: [modalidadId], references: [id])
+  modalidad   Modalidad @relation(fields: [modalidadId], references: [id])
 }
 
 model Feriado {
   id     Int      @id @default(autoincrement())
   fecha  DateTime @unique
-  motivo String
+  nombre String
 }
