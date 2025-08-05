@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
@@ -24,10 +22,9 @@ export async function GET() {
   }
 }
 
-
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
+    const body = await req.json();
     const {
       titulo,
       fechaInicio,
@@ -39,7 +36,7 @@ export async function POST(req: Request) {
       fechaAdjudicacion,
       fechaPresentacionDocs,
       fechaFirmaContratos,
-    } = body
+    } = body;
 
     const nueva = await prisma.contratacion.create({
       data: {
@@ -57,15 +54,14 @@ export async function POST(req: Request) {
       include: {
         modalidad: true,
       },
-    })
+    });
 
-    return NextResponse.json(nueva)
+    return NextResponse.json(nueva);
   } catch (error: any) {
-    console.error("Error al crear registro:", error)
+    console.error("Error al crear registro:", error);
     return NextResponse.json(
       { error: "Error al crear el registro" },
       { status: 500 }
-    )
+    );
   }
 }
-
