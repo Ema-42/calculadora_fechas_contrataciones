@@ -26,6 +26,7 @@ export interface Feriado {
   fecha: string;
   nombre: string;
 }
+
 export interface Modalidad {
   id: number;
   nombre: string;
@@ -35,30 +36,89 @@ export interface Modalidad {
   presentacion: string;
   firma: string;
 }
+
+export interface PaginationInfo {
+  currentPage: number;
+  totalPages: number;
+  totalRegistros: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  nextPage: number | null;
+  prevPage: number | null;
+}
+
 export default function Home() {
   const [registros, setRegistros] = useState<Registro[]>([]);
   const [feriados, setFeriados] = useState<Feriado[]>([]);
   const [modalidades, setModalidades] = useState<Modalidad[]>([]);
+  const [paginationInfo, setPaginationInfo] = useState<PaginationInfo | null>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchRegistros = async () => {
-      try {
-        const res = await fetch("/api/contrataciones");
-        if (!res.ok) throw new Error("Error al cargar registros");
-        const data = await res.json();
-        setRegistros(data);
-      } catch (error: any) {
-        console.error("Error al obtener registros:", error?.message || error);
-        setToastMessage("Hubo un error al cargar los registros.");
-        setShowToast(true);
-      }
-    };
+  // Estados para paginación y búsqueda
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+  const [searchTerm, setSearchTerm] = useState("");
 
-    fetchRegistros();
-  }, []);
+  const fetchRegistros = async (page: number = 1, pageLimit: number = 5, search: string = "") => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: pageLimit.toString(),
+      });
+      
+      // Solo agregar parámetro search si no está vacío
+      if (search.trim()) {
+        params.append("search", search.trim());
+      }
+      
+      const res = await fetch(`/api/contrataciones?${params}`);
+      if (!res.ok) throw new Error("Error al cargar registros");
+      
+      const data = await res.json();
+      setRegistros(data.data);
+      setPaginationInfo(data.pagination);
+    } catch (error: any) {
+      console.error("Error al obtener registros:", error?.message || error);
+      setToastMessage("Hubo un error al cargar los registros.");
+      setShowToast(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Efecto para cargar registros cuando cambian página o limit
+  useEffect(() => {
+    fetchRegistros(currentPage, limit, searchTerm);
+  }, [currentPage, limit]);
+
+  // Función para realizar búsqueda
+  const handleSearch = (search: string) => {
+    setSearchTerm(search);
+    setCurrentPage(1); // Resetear a página 1 al buscar
+    fetchRegistros(1, limit, search);
+  };
+
+  // Función para limpiar búsqueda
+  const handleClearSearch = () => {
+    setSearchTerm("");
+    setCurrentPage(1);
+    fetchRegistros(1, limit, "");
+  };
+
+  // Función para cambiar página
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  // Función para cambiar límite de registros
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setCurrentPage(1); // Resetear a página 1 cuando cambia el límite
+  };
 
   useEffect(() => {
     const fetchModalidades = async () => {
@@ -68,8 +128,8 @@ export default function Home() {
         const data = await res.json();
         setModalidades(data);
       } catch (error: any) {
-        console.error("Error al obtener registros:", error?.message || error);
-        setToastMessage("Hubo un error al cargar los registros.");
+        console.error("Error al obtener modalidades:", error?.message || error);
+        setToastMessage("Hubo un error al cargar las modalidades.");
         setShowToast(true);
       }
     };
@@ -85,16 +145,14 @@ export default function Home() {
         const data = await res.json();
         setFeriados(data);
       } catch (error: any) {
-        console.error("Error al obtener registros:", error?.message || error);
-        setToastMessage("Hubo un error al cargar los registros.");
+        console.error("Error al obtener feriados:", error?.message || error);
+        setToastMessage("Hubo un error al cargar los feriados.");
         setShowToast(true);
       }
     };
 
     fetchFeriados();
   }, []);
-
-  
 
   const esFeriado = (fecha: Date) => {
     const fechaStr = fecha.toISOString().split("T")[0];
@@ -106,7 +164,7 @@ export default function Home() {
 
   const esFinDeSemana = (fecha: Date) => {
     const dia = fecha.getDay();
-    return dia === 0 || dia === 6; // 0 = domingo, 6 = sábado
+    return dia === 0 || dia === 6;
   };
 
   const esDiaHabil = (fecha: Date) => {
@@ -118,7 +176,6 @@ export default function Home() {
     const fecha = new Date(fechaInicio);
     let diasAgregados = 0;
 
-    // Si la fecha de inicio es un día no hábil, avanzar al siguiente día hábil
     while (!esDiaHabil(fecha)) {
       fecha.setDate(fecha.getDate() + 1);
     }
@@ -172,7 +229,6 @@ export default function Home() {
         fechasCalculadas.fechaFirmaContratos
       ).toISOString(),
     };
-    console.log("Payload a enviar:", payload);
 
     try {
       const res = await fetch("/api/contrataciones", {
@@ -185,8 +241,8 @@ export default function Home() {
 
       const nuevo = await res.json();
 
-      // Agrega el registro a la lista actual en memoria (opcional)
-      setRegistros((prev) => [nuevo, ...prev]);
+      // Recargar registros después de agregar uno nuevo
+      await fetchRegistros(currentPage, limit, searchTerm);
       mostrarToast("Registro creado exitosamente");
     } catch (error) {
       console.error("Error en agregarRegistro:", error);
@@ -196,19 +252,18 @@ export default function Home() {
 
   function parseFechaLocal(fechaStr: string): Date {
     const [year, month, day] = fechaStr.split("-").map(Number);
-    // Nota: mes es 0-based en JS Date (enero = 0)
     return new Date(year, month - 1, day);
   }
 
   const calcularFechas = (fechaInicio: string, modalidadId: number) => {
-    const fecha = parseFechaLocal(fechaInicio); 
+    const fecha = parseFechaLocal(fechaInicio);
     const modalidad = modalidades.find(
       (m) => Number(m.id) === Number(modalidadId)
     );
     if (!modalidad) {
       throw new Error("Modalidad no encontrada para el ID: " + modalidadId);
     }
-    // Configuración de días hábiles por modalidad
+
     const config = {
       publicacion: Number(modalidad.publicacion),
       apertura: Number(modalidad.apertura),
@@ -228,21 +283,27 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {" "}
-      {/* Fondo más gris */}
       <Navbar />
       <main className="container mx-auto px-4 py-6 space-y-8">
         <FormularioCalculo
           onSubmit={agregarRegistro}
           modalidades={modalidades}
         />
-        <ListadoRegistros registros={registros} loading={isLoading} />
+        <ListadoRegistros 
+          registros={registros} 
+          loading={isLoading}
+          paginationInfo={paginationInfo}
+          onPageChange={handlePageChange}
+          onLimitChange={handleLimitChange}
+          onSearch={handleSearch}
+          onClearSearch={handleClearSearch}
+          searchTerm={searchTerm}
+        />
       </main>
       {showToast && (
         <Toast message={toastMessage} onClose={() => setShowToast(false)} />
       )}
-      <Footer /> {/* Añadir el Footer */}
+      <Footer />
     </div>
   );
 }
-

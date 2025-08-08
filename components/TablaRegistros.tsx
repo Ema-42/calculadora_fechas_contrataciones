@@ -8,6 +8,8 @@ import {
   CalendarCheck,
   Download,
   DollarSign,
+  Share2,
+  Copy,
 } from "lucide-react"; // Importar Download
 import { useState } from "react";
 import { generateSingleRecordPdf } from "@/lib/pdf-utils"; // Importar la utilidad de PDF
@@ -32,6 +34,7 @@ interface TablaRegistrosProps {
 
 export default function TablaRegistros({ registros }: TablaRegistrosProps) {
   const [filaSeleccionada, setFilaSeleccionada] = useState<number | null>(null);
+  const [copiada, setCopiada] = useState(false);
 
   const formatearFecha = (fecha: string, includeTime = false) => {
     const fechaObj = new Date(fecha);
@@ -73,6 +76,55 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
   ) => {
     event.stopPropagation();
     generateSingleRecordPdf(registro, "download");
+  };
+
+  const formatearRegistroComoTexto = (registro: any): string => {
+    const formatoFecha = (fecha: string) =>
+      new Date(fecha).toISOString().split("T")[0];
+
+    return `
+📄 *Título:* ${registro.titulo}
+💰 *Monto:* Bs. ${registro.monto.toFixed(2)}
+📅 *Fecha de generación:* ${formatearFecha(registro.fechaGeneracion, true)}
+🛠️ *Modalidad:* ${registro.modalidad?.nombre || "N/A"}
+
+📌 *Fechas importantes:*
+📢 Publicación: ${formatearFechaSimple(registro.fechaPublicacion)}
+📂 Apertura: ${formatearFechaSimple(registro.fechaApertura)}
+🏆 Adjudicación: ${formatearFechaSimple(registro.fechaAdjudicacion)}
+📑 Presentación de documentos: ${formatearFechaSimple(
+      registro.fechaPresentacionDocs
+    )}
+✍️ Firma de contratos: ${formatearFechaSimple(registro.fechaFirmaContratos)}
+`.trim();
+  };
+
+  const handleCopyToClipboard = async (data: object) => {
+    try {
+      const texto = formatearRegistroComoTexto(data);
+      await navigator.clipboard.writeText(texto);
+      setCopiada(true);
+      setTimeout(() => setCopiada(false), 3000); // Resetear después de
+    } catch (error) {
+      console.error("Error al copiar al portapapeles:", error);
+    }
+  };
+
+  const handleShare = async (data: object) => {
+    const texto = formatearRegistroComoTexto(data);
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Compartir información",
+          text: texto,
+        });
+        console.log("Compartido exitosamente");
+      } catch (error) {
+        console.error("Error al compartir:", error);
+      }
+    } else {
+      alert("La función de compartir no está disponible en este navegador");
+    }
   };
 
   return (
@@ -128,7 +180,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                   <Calendar className="mr-2 text-gray-500" size={16} />
                   <p>
                     <strong className="text-gray-800">Fecha de Inicio:</strong>{" "}
-                    <span className="ml-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-blue-100 border border-blue-400 text-blue-800 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaInicio)}
                     </span>
                   </p>
@@ -137,7 +189,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                   <DollarSign className="mr-2 text-gray-500" size={16} />
                   <p>
                     <strong className="text-gray-800">Monto:</strong>{" "}
-                    <span className="ml-2 px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-amber-100 border border-amber-400 text-amber-800 rounded-full text-sm font-semibold">
                       {formatearMonto(registro.monto)} BS.
                     </span>
                   </p>
@@ -150,14 +202,14 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                   <li className="flex items-center">
                     <CalendarCheck className="mr-2 text-gray-500" size={16} />
                     <strong className="text-gray-800">Publicación:</strong>
-                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaPublicacion)}
                     </span>
                   </li>
                   <li className="flex items-center">
                     <CalendarCheck className="mr-2 text-gray-500" size={16} />
                     <strong className="text-gray-800">Apertura:</strong>{" "}
-                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaApertura)}
                     </span>
                   </li>
@@ -166,7 +218,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                     <strong className="text-gray-800">
                       Adjudicación:
                     </strong>{" "}
-                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaAdjudicacion)}
                     </span>
                   </li>
@@ -175,7 +227,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                     <strong className="text-gray-800">
                       Presentación Docs:
                     </strong>{" "}
-                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaPresentacionDocs)}
                     </span>
                   </li>
@@ -184,21 +236,47 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                     <strong className="text-gray-800">
                       Firma Contrato:
                     </strong>{" "}
-                    <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaFirmaContratos)}
                     </span>
                   </li>
                 </ul>
               </div>
 
-              <div className="mt-4 flex justify-center">
+              <div className="mt-4 flex justify-center sm:justify-center  sm:gap-4">
                 <button
                   onClick={(e) => handleDownloadSingle(registro, e)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors flex items-center w-full justify-center"
+                  className="bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
                   title="Descargar PDF"
                 >
-                  <Download size={16} className="mr-2" />
-                  Descargar PDF
+                  <div className="flex items-center justify-center w-full">
+                    <Download size={16} className="mr-2" />
+                    <span>PDF</span>
+                  </div>
+                </button>
+                <button
+                  className="bg-cyan-600 ml-2 hover:bg-cyan-700 text-white px-2 py-1.5 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
+                  title="Compartir"
+                  onClick={() => handleShare(registro)}
+                >
+                  <div className="flex items-center justify-center w-full">
+                    <Share2 size={16} className="mr-2" />
+                    <span>Compartir</span>
+                  </div>
+                </button>
+                <button
+                  className="bg-slate-600 ml-2 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
+                  title="Copiar"
+                  onClick={() => handleCopyToClipboard(registro)}
+                >
+                  <div className="flex items-center justify-center w-full">
+                    <Copy size={16} className="mr-2" />
+                    {copiada ? (
+                      <span className="font-bold">Copiado ✅</span>
+                    ) : (
+                      <span>Copiar</span>
+                    )}
+                  </div>
                 </button>
               </div>
             </div>
