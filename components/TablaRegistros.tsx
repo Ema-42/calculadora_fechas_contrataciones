@@ -246,7 +246,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
               <div className="mt-4 flex justify-center sm:justify-center  sm:gap-4">
                 <button
                   onClick={(e) => handleDownloadSingle(registro, e)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
+                  className="bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
                   title="Descargar PDF"
                 >
                   <div className="flex items-center justify-center w-full">
@@ -255,7 +255,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                   </div>
                 </button>
                 <button
-                  className="bg-cyan-600 ml-2 hover:bg-cyan-700 text-white px-2 py-1.5 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
+                  className="bg-cyan-600 ml-2 hover:bg-cyan-700 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
                   title="Compartir"
                   onClick={() => handleShare(registro)}
                 >
@@ -265,7 +265,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                   </div>
                 </button>
                 <button
-                  className="bg-slate-600 ml-2 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
+                  className="bg-slate-600 ml-2 hover:bg-slate-700 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
                   title="Copiar"
                   onClick={() => handleCopyToClipboard(registro)}
                 >
