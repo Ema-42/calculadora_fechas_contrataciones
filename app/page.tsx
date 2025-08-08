@@ -62,8 +62,10 @@ export default function Home() {
   const [limit, setLimit] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchRegistros = async (page: number = 1, pageLimit: number = 5, search: string = "") => {
-    setIsLoading(true);
+  const fetchRegistros = async (page: number = 1, pageLimit: number = 5, search: string = "", saving: boolean = false) => {
+    if (saving) {
+      setIsLoading(true);
+    }
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -203,6 +205,7 @@ export default function Home() {
     fechaInicio: string;
     monto: number;
     modalidadId: any;
+    saving?: boolean;
   }) => {
     const fechasCalculadas = calcularFechas(
       datos.fechaInicio,

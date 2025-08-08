@@ -12,6 +12,7 @@ interface FormularioCalculoProps {
     fechaInicio: string;
     monto: number;
     modalidadId: number;
+    saving?: boolean;
   }) => void;
 
   modalidades: Modalidad[];
@@ -41,6 +42,7 @@ export default function FormularioCalculo({
       fechaInicio,
       monto: Number.parseFloat(monto),
       modalidadId: Number(modalidad),
+      saving: true,
     });
 
     // Limpiar formulario
@@ -48,13 +50,6 @@ export default function FormularioCalculo({
     setFechaInicio("");
     setMonto("");
     setModalidad("");
-
-    console.log("Formulario enviado:", {
-      titulo: tituloEnMayusculas,
-      fechaInicio,
-      monto,
-      modalidad,
-    });
   };
 
   return (
