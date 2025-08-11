@@ -70,99 +70,98 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col px-4 sm:px-0 min-h-screen bg-gray-300/80">
-      <div className="flex-grow flex items-center justify-center">
-        <div className="w-full max-w-md">
-          {/* Card principal */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-            {/* Header con gradiente rojo */}
-            <div className="bg-red-800 px-8 py-6">
-              <h2 className="text-2xl font-bold text-white text-center">
-                Bienvenido
-              </h2>
-              <p className="text-red-100 text-center text-sm mt-1">
-                Inicia sesión en tu cuenta
-              </p>
-            </div>
+    <div className="flex flex-col px-4 sm:px-0 min-h-screen items-center justify-center bg-gray-300/80">
+      <div className="w-full max-w-md">
+        {/* Card principal */}
+        <div className="bg-white rounded-2xl shadow-xl     overflow-hidden">
+          {/* Header con gradiente rojo */}
+          <div className="bg-red-800 px-8 py-6">
+            <h2 className="text-2xl font-bold text-white text-center">
+              Bienvenido
+            </h2>
+            <p className="text-red-100 text-center text-sm mt-1">
+              Inicia sesión en tu cuenta
+            </p>
+          </div>
 
-            {/* Formulario */}
-            <div className="px-8 py-6">
-              <form className="space-y-5" onSubmit={handleSubmit}>
-                {/* Campo Email */}
-                <div className="space-y-2">
-                  <label
-                    htmlFor="username"
-                    className="block text-sm font-semibold text-slate-700"
-                  >
-                    Correo electrónico
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-slate-400" />
-                    </div>
-                    <input
-                      type="email"
-                      id="username"
-                      name="username"
-                      className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white"
-                      placeholder="tu@email.com"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Campo Contraseña */}
-                <div className="space-y-2">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-semibold text-slate-700"
-                  >
-                    Contraseña
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-slate-400" />
-                    </div>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      id="password"
-                      name="password"
-                      className="block w-full pl-10 pr-12 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button
-                      type="button"
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                      onClick={togglePasswordVisibility}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5 text-slate-400 hover:text-slate-600 transition-colors" />
-                      ) : (
-                        <Eye className="h-5 w-5 text-slate-400 hover:text-slate-600 transition-colors" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Botón de acceso */}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full py-3 px-4 bg-red-800 text-white font-semibold rounded-lg hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+          {/* Formulario */}
+          <div className="px-8 py-6">
+            <form className="space-y-5" onSubmit={handleSubmit}>
+              {/* Campo Email */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-semibold text-slate-700"
                 >
-                  {isLoading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Iniciando sesión...
-                    </div>
-                  ) : (
-                    "Iniciar sesión"
-                  )}
-                </button>
+                  Correo electrónico
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    type="email"
+                    id="username"
+                    name="username"
+                    className="block w-full pl-10 pr-3 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white"
+                    placeholder="tu@email.com"
+                    required
+                  />
+                </div>
+              </div>
 
-                {/* Botón de Google comentado */}
-                {/* 
+              {/* Campo Contraseña */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-semibold text-slate-700"
+                >
+                  Contraseña
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-slate-400" />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    className="block w-full pl-10 pr-12 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 bg-slate-50 focus:bg-white"
+                    placeholder="••••••••"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-slate-400 hover:text-slate-600 transition-colors" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-slate-400 hover:text-slate-600 transition-colors" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Botón de acceso */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 px-4 bg-red-800 text-white font-semibold rounded-lg hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Iniciando sesión...
+                  </div>
+                ) : (
+                  "Iniciar sesión"
+                )}
+              </button>
+
+              {/* Botón de Google comentado */}
+              {/* 
               <button
                 type="button"
                 onClick={signIn}
@@ -178,34 +177,31 @@ export default function LoginPage() {
                 Continuar con Google
               </button>
               */}
-              </form>
-            </div>
-          </div>
-
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-700">
-              ¿Olvidaste tu contraseña?{" "}
-              <a
-                href="#"
-                className="text-red-500 font-bold hover:text-red-700 underline"
-              >
-                Recuperar acceso
-              </a>
-            </p>
+            </form>
           </div>
         </div>
-      </div>
 
-      {/* Footer que se pega abajo */}
-      <div className=" mb-5 text-center text-gray-600 text-xs flex flex-col items-center gap-3">
+        {/* Footer opcional */}
+        <div className="text-center mt-6">
+          <p className="text-sm text-gray-700">
+            ¿Olvidaste tu contraseña?{" "}
+            <a
+              href="#"
+              className="text-red-500 font-bold hover:text-red-700 underline"
+            >
+              Recuperar acceso
+            </a>
+          </p>{" "}
+        </div>
+      </div>
+      <div className="mt-12 text-center text-gray-600 text-xs flex flex-col items-center gap-2 mb-0 ">
         <img
-          src="/logo.png"
-          alt="Logo de Jefatura de Sistemas"
-          className="w-10 h-10 mx-auto rounded-full shadow-md"
+          src="/logo.png" // Cambia esta ruta por la correcta de tu logo
+          alt="Logo de la oficina desarrolladora"
+          className="w-12 h-auto mx-auto rounded-full"
         />
-        <p>© 2025 Todos los derechos reservados - Jefatura de Sistemas</p>
+        <p>© 2025 Todos los derechos reservados - Oficina de Desarrollo</p>
       </div>
-
       <ToastContainer />
     </div>
   );
