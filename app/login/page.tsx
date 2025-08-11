@@ -200,7 +200,7 @@ export default function LoginPage() {
           alt="Logo de la oficina desarrolladora"
           className="w-12 h-auto mx-auto rounded-full"
         />
-        <p>© 2025 Todos los derechos reservados - Oficina de Desarrollo</p>
+        <p>© 2025 Todos los derechos reservados - Jefatura de Tenologías de la Información.</p>
       </div>
       <ToastContainer />
     </div>
