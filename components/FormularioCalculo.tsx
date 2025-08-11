@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import { Calculator } from "lucide-react";
-import { Modalidad } from "@/app/page";
+import { Modalidad } from "@/app/home/page";
 
 interface FormularioCalculoProps {
   onSubmit: (datos: {

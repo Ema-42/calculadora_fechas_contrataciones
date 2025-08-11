@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable"; // Cambio en la importación
-import type { Registro } from "@/app/page"; // Importar el tipo Registro
+import type { Registro } from "@/app/home/page"; // Importar el tipo Registro
 import { min } from "date-fns";
 
 // Extender el tipo jsPDF para incluir autoTable
@@ -26,7 +26,7 @@ const formatearFecha = (fecha: string, includeTime = false) => {
   return fechaObj.toLocaleDateString("es-ES");
 };
 
- const formatearFechaSimple = (fecha: string) => {
+const formatearFechaSimple = (fecha: string) => {
   // Eliminar la "Z" para evitar conversión de zona horaria
   const fechaSinZ = fecha.replace(/Z$/, "");
   const fechaObj = new Date(fechaSinZ);
@@ -36,7 +36,6 @@ const formatearFecha = (fecha: string, includeTime = false) => {
     year: "numeric",
   });
 };
-
 
 const formatearMonto = (monto: number) => {
   return new Intl.NumberFormat("en", {
@@ -139,10 +138,10 @@ export const generateSingleRecordPdf = (
   // Header Section
   doc.setFontSize(18);
   doc.setTextColor(30, 30, 30);
-  const title = 'DETALLE DE REGISTRO DE CONTRATACIÓN';
+  const title = "DETALLE DE REGISTRO DE CONTRATACIÓN";
   const titleX = doc.internal.pageSize.width / 2;
-  doc.text(title, titleX, y, { align: 'center' });
-    // Subrayado decorativo
+  doc.text(title, titleX, y, { align: "center" });
+  // Subrayado decorativo
   const titleWidth = doc.getTextWidth(title);
   const lineX1 = titleX - titleWidth / 2;
   const lineX2 = titleX + titleWidth / 2;
@@ -151,31 +150,35 @@ export const generateSingleRecordPdf = (
   doc.line(lineX1, y + 2, lineX2, y + 2);
   y += 15;
 
-  
   // === Información Básica ===
   doc.setFontSize(12);
   doc.setTextColor(50, 50, 50);
   doc.text(`ID: ${registro.id}`, 14, y);
 
   const fechaGen = formatearFecha(registro.fechaGeneracion, true);
-  doc.text(`Fecha de Generación: ${fechaGen}`, doc.internal.pageSize.width - 14, y, {
-    align: 'right',
-  });
+  doc.text(
+    `Fecha de Generación: ${fechaGen}`,
+    doc.internal.pageSize.width - 14,
+    y,
+    {
+      align: "right",
+    }
+  );
   y += 10;
 
   // === Título del registro (centrado, en mayúsculas) ===
   doc.setFontSize(16);
   doc.setTextColor(20, 20, 20);
-  const titulo = (registro.titulo || 'Sin Título').toUpperCase();
-  doc.text(titulo, doc.internal.pageSize.width / 2, y, { align: 'center' });
+  const titulo = (registro.titulo || "Sin Título").toUpperCase();
+  doc.text(titulo, doc.internal.pageSize.width / 2, y, { align: "center" });
   y += 10;
 
   // === Modalidad (centrada) ===
   doc.setFontSize(12);
   doc.setTextColor(80, 80, 80);
-  const modalidad = registro.modalidad.nombre || 'N/A';
+  const modalidad = registro.modalidad.nombre || "N/A";
   doc.text(`Modalidad: ${modalidad}`, doc.internal.pageSize.width / 2, y, {
-    align: 'center',
+    align: "center",
   });
   y += 15;
 
@@ -183,10 +186,10 @@ export const generateSingleRecordPdf = (
   doc.setDrawColor(200, 200, 200); // Light gray
   doc.line(14, y, doc.internal.pageSize.width - 14, y);
   y += 10;
-// === Información Clave (Inicio y Monto) ===
+  // === Información Clave (Inicio y Monto) ===
   doc.setFontSize(14);
   doc.setTextColor(20, 20, 20);
-  doc.text('Información Clave:', 14, y);
+  doc.text("Información Clave:", 14, y);
   y += 8;
 
   doc.setFontSize(12);
@@ -196,7 +199,7 @@ export const generateSingleRecordPdf = (
 
   const monto = formatearMonto(registro.monto);
   doc.text(`Monto: ${monto} BS.`, doc.internal.pageSize.width - 14, y, {
-    align: 'right',
+    align: "right",
   });
   y += 15;
 
@@ -206,72 +209,79 @@ export const generateSingleRecordPdf = (
   y += 15;
 
   // Process Dates Section
-  
+
   // === Fechas del Proceso (en tabla elegante) ===
- doc.setFontSize(14);
-doc.setTextColor(20, 20, 20);
-const procesoTitle = 'Fechas del Proceso:';
-doc.text(procesoTitle, doc.internal.pageSize.width / 2, y, { align: 'center' });
-y += 10;
+  doc.setFontSize(14);
+  doc.setTextColor(20, 20, 20);
+  const procesoTitle = "Fechas del Proceso:";
+  doc.text(procesoTitle, doc.internal.pageSize.width / 2, y, {
+    align: "center",
+  });
+  y += 10;
 
-const dates = [
-  ['Publicación', formatearFechaSimple(registro.fechaPublicacion)],
-  ['Apertura', formatearFechaSimple(registro.fechaApertura)],
-  ['Adjudicación', formatearFechaSimple(registro.fechaAdjudicacion)],
-  ['Presentación Docs', formatearFechaSimple(registro.fechaPresentacionDocs)],
-  ['Firma Contratos', formatearFechaSimple(registro.fechaFirmaContratos)],
-];
+  const dates = [
+    ["Publicación", formatearFechaSimple(registro.fechaPublicacion)],
+    ["Apertura", formatearFechaSimple(registro.fechaApertura)],
+    ["Adjudicación", formatearFechaSimple(registro.fechaAdjudicacion)],
+    ["Presentación Docs", formatearFechaSimple(registro.fechaPresentacionDocs)],
+    ["Firma Contratos", formatearFechaSimple(registro.fechaFirmaContratos)],
+  ];
 
-// Configuración para centrar la tabla
-const pageWidth = doc.internal.pageSize.width;
-const tableWidth = 140; // Ancho deseado de la tabla en mm
-const marginX = (pageWidth - tableWidth) / 2; // Margen izquierdo para centrar
+  // Configuración para centrar la tabla
+  const pageWidth = doc.internal.pageSize.width;
+  const tableWidth = 140; // Ancho deseado de la tabla en mm
+  const marginX = (pageWidth - tableWidth) / 2; // Margen izquierdo para centrar
 
-autoTable(doc, {
-  head: [['Etapa', 'Fecha']],
-  body: dates,
-  startY: y,
-  theme: 'grid',
-  styles: {
-    fontSize: 10,
-    cellPadding: 3,
-    font: 'helvetica',
-    halign: 'left', // Alineación del texto dentro de las celdas
-  },
-  headStyles: {
-    fillColor: [220, 38, 38],
-    textColor: [255, 255, 255],
-    fontSize: 11,
-    fontStyle: 'bold',
-    halign: 'center',
-  },
-  columnStyles: {
-    0: { cellWidth: 65, halign: 'left' },
-    1: { cellWidth: 75, halign: 'center' }, // Fechas centradas
-  },
-  margin: { left: marginX, right: marginX }, // Centrado mediante margen
-  // Asegura que no se fuerce a 100%
-  tableWidth: tableWidth,
-});
+  autoTable(doc, {
+    head: [["Etapa", "Fecha"]],
+    body: dates,
+    startY: y,
+    theme: "grid",
+    styles: {
+      fontSize: 10,
+      cellPadding: 3,
+      font: "helvetica",
+      halign: "left", // Alineación del texto dentro de las celdas
+    },
+    headStyles: {
+      fillColor: [220, 38, 38],
+      textColor: [255, 255, 255],
+      fontSize: 11,
+      fontStyle: "bold",
+      halign: "center",
+    },
+    columnStyles: {
+      0: { cellWidth: 65, halign: "left" },
+      1: { cellWidth: 75, halign: "center" }, // Fechas centradas
+    },
+    margin: { left: marginX, right: marginX }, // Centrado mediante margen
+    // Asegura que no se fuerce a 100%
+    tableWidth: tableWidth,
+  });
 
-const finalY = (doc as any).lastAutoTable.finalY + 15;
-y = finalY;
+  const finalY = (doc as any).lastAutoTable.finalY + 15;
+  y = finalY;
 
   // === Footer ===
   doc.setFontSize(8);
   doc.setTextColor(120, 120, 120);
   const footerText =
-    'Generado por Herramienta de Gestión de Contratación - Desarrollado por la Jefatura de TI del Gobierno Autónomo Municipal de Sucre';
-  doc.text(footerText, doc.internal.pageSize.width / 2, doc.internal.pageSize.height - 10, {
-    align: 'center',
-  });
+    "Generado por Herramienta de Gestión de Contratación - Desarrollado por la Jefatura de TI del Gobierno Autónomo Municipal de Sucre";
+  doc.text(
+    footerText,
+    doc.internal.pageSize.width / 2,
+    doc.internal.pageSize.height - 10,
+    {
+      align: "center",
+    }
+  );
 
   // === Acción: Descargar o Imprimir ===
-  if (action === 'download') {
+  if (action === "download") {
     doc.save(`registro_${registro.id}.pdf`);
   } else {
-    const pdfDataUri = doc.output('datauristring');
-    const newWindow = window.open('', '_blank');
+    const pdfDataUri = doc.output("datauristring");
+    const newWindow = window.open("", "_blank");
     if (newWindow) {
       newWindow.document.write(`
         <html>
