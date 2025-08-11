@@ -7,6 +7,7 @@ import { auth, googleProvider } from "../firebase/config";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
+import { finalization } from "process";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -62,6 +63,8 @@ export default function LoginPage() {
       router.push("/home");
     } catch (error: any) {
       notifyError(`Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -186,7 +189,7 @@ export default function LoginPage() {
           <p className="text-sm text-gray-700">
             ¿Olvidaste tu contraseña?{" "}
             <a
-              href="#"
+             href="/forgot-password" 
               className="text-red-500 font-bold hover:text-red-700 underline"
             >
               Recuperar acceso
