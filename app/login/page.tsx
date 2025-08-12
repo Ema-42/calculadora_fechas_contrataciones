@@ -17,7 +17,7 @@ export default function LoginPage() {
   const notifySuccess = (msg: string) =>
     toast.success(msg, {
       position: "top-right",
-      autoClose: 4000,
+      autoClose: 1500,
       hideProgressBar: false,
       closeOnClick: false,
       closeButton: false,
@@ -28,7 +28,7 @@ export default function LoginPage() {
   const notifyError = (msg: string) =>
     toast.error(msg, {
       position: "top-right",
-      autoClose: 4000,
+      autoClose: 1500,
       hideProgressBar: false,
       closeOnClick: false,
       closeButton: false,

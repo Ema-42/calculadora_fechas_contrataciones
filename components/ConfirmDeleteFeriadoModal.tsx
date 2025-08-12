@@ -2,6 +2,7 @@ import React from "react";
 
 interface ConfirmDeleteFeriadoModalProps {
   open: boolean;
+  feriadoNombre: string | null;
   onClose: () => void;
   onConfirm: () => void;
 }
@@ -10,6 +11,7 @@ export default function ConfirmDeleteFeriadoModal({
   open,
   onClose,
   onConfirm,
+  feriadoNombre
 }: ConfirmDeleteFeriadoModalProps) {
   if (!open) return null;
 
@@ -25,7 +27,7 @@ export default function ConfirmDeleteFeriadoModal({
           🗑️ ¿Eliminar este feriado?
         </h2>
         <p className="text-sm text-gray-600 mb-6">
-          Esta acción marcará el feriado como eliminado y no se podrá recuperar.
+          Esta acción marcará el feriado de <span className="font-semibold">{feriadoNombre}</span> como eliminado y no se podrá recuperar.
         </p>
         <div className="flex justify-end gap-3">
           <button

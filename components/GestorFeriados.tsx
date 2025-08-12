@@ -3,9 +3,17 @@
 import type React from "react";
 
 import { useState } from "react";
-import { Calendar, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Calendar,
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Info,
+} from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
 import ConfirmDeleteFeriadoModal from "./ConfirmDeleteFeriadoModal";
+import { set } from "date-fns";
 interface Feriado {
   id: number;
   fecha: string;
@@ -30,12 +38,15 @@ export default function GestorFeriados({
   const [feriadoSeleccionado, setFeriadoSeleccionado] = useState<number | null>(
     null
   );
+  const [feriadoNombreSeleccionado, setFeriadoNombreSeleccionado] = useState<
+    string | null
+  >(null);
 
   const notifyError = (msg: string) =>
     toast.error(msg, {
       position: "top-right",
-      autoClose: 4000,
-      hideProgressBar: false,
+      autoClose: 1500,
+      hideProgressBar: true,
       closeOnClick: false,
       closeButton: false,
       draggable: true,
@@ -143,18 +154,36 @@ export default function GestorFeriados({
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800 flex items-center">
             <Calendar className="mr-2 text-red-700" size={24} />
-            Gestión de Feriados
+            Gestionar de Feriados
           </h2>
+
           <div className="text-red-700">
             {desplegado ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
           </div>
         </div>
+        <h4 className="mt-1 text-xs text-gray-600">
+          En esta sección puedes agregar, ver y eliminar los feriados de la
+          gestión.
+        </h4>
       </div>
 
       {/* Contenido desplegable */}
       {desplegado && (
         <div className="px-6 pb-6">
           <form onSubmit={handleSubmit} className="mb-6 border-t pt-6">
+            <div className="bg-gradient-to-r from-sky-50 to-sky-100 border border-sky-200 p-3 md:p-4 mb-6 rounded-lg">
+              <div className="flex items-center space-x-3 mb-2">
+                <Info className="h-4 w-4 md:h-5 md:w-5 text-sky-600 flex-shrink-0" />
+                <h4 className="text-xs font-bold  md:text-sm  text-sky-800">
+                  Gestión de Feriados {new Date().getFullYear()}
+                </h4>
+              </div>
+              <p className="text-xs md:text-sm text-sky-700 leading-relaxed">
+                Los feriados registrados son válidos solo para este año. Al
+                cambiar de gestión, se eliminarán automáticamente y deberán
+                cargarse los nuevos.
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -227,7 +256,10 @@ export default function GestorFeriados({
                             </p>
                           </div>
                           <button
-                            onClick={() => handleOpenModal(feriado.id)}
+                            onClick={() => (
+                              setFeriadoNombreSeleccionado(feriado.nombre),
+                              handleOpenModal(feriado.id)
+                            )}
                             className="text-red-600 hover:text-red-800 p-1 rounded transition-colors flex-shrink-0 ml-2"
                             title="Eliminar feriado"
                           >
@@ -245,6 +277,7 @@ export default function GestorFeriados({
             open={modalOpen}
             onClose={() => setModalOpen(false)}
             onConfirm={handleConfirmDelete}
+            feriadoNombre={feriadoNombreSeleccionado}
           />
           <ToastContainer />
         </div>
