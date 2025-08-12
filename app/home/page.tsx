@@ -273,8 +273,7 @@ export default function Home() {
       });
 
       if (!res.ok) throw new Error("Error al crear registro");
-
-      // Recargar registros después de agregar uno nuevo
+ 
       await fetchRegistros(currentPage, limit, searchTerm);
       notifySuccess("Registro creado exitosamente");
     } catch (error) {
