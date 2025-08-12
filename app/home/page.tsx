@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import FormularioCalculo from "@/components/FormularioCalculo";
 import ListadoRegistros from "@/components/ListadoRegistros";
-import Toast from "@/components/Toast";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
-
+import GestorFeriados from "@/components/GestorFeriados";
+import { ToastContainer, toast } from "react-toastify";
 export interface Registro {
   id: number;
   fechaGeneracion: string;
@@ -59,9 +59,10 @@ export default function Home() {
   const [paginationInfo, setPaginationInfo] = useState<PaginationInfo | null>(
     null
   );
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
+
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingSaveContratacion, setIsLoadingSaveContratacion] =
+    useState(false);
 
   // Estados para paginación y búsqueda
   const [currentPage, setCurrentPage] = useState(1);
@@ -102,8 +103,7 @@ export default function Home() {
       setPaginationInfo(data.pagination);
     } catch (error: any) {
       console.error("Error al obtener registros:", error?.message || error);
-      setToastMessage("Hubo un error al cargar los registros.");
-      setShowToast(true);
+      notifyError("Hubo un error al cargar los registros.");
     } finally {
       setIsLoading(false);
     }
@@ -148,8 +148,7 @@ export default function Home() {
         setModalidades(data);
       } catch (error: any) {
         console.error("Error al obtener modalidades:", error?.message || error);
-        setToastMessage("Hubo un error al cargar las modalidades.");
-        setShowToast(true);
+        notifyError("Hubo un error al cargar las modalidades.");
       }
     };
 
@@ -165,13 +164,36 @@ export default function Home() {
         setFeriados(data);
       } catch (error: any) {
         console.error("Error al obtener feriados:", error?.message || error);
-        setToastMessage("Hubo un error al cargar los feriados.");
-        setShowToast(true);
+        notifyError("Hubo un error al cargar los feriados.");
       }
     };
 
     fetchFeriados();
   }, []);
+
+  const notifyError = (msg: string) =>
+    toast.error(msg, {
+      position: "top-right",
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      closeButton: false,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+
+  const notifySuccess = (msg: string) =>
+    toast.success(msg, {
+      position: "top-right",
+      autoClose: 4000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      closeButton: false,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
 
   const esFeriado = (fecha: Date) => {
     const fechaStr = fecha.toISOString().split("T")[0];
@@ -209,14 +231,6 @@ export default function Home() {
     return fecha.toISOString().split("T")[0];
   };
 
-  const mostrarToast = (mensaje: string) => {
-    setToastMessage(mensaje);
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-    }, 3000);
-  };
-
   const agregarRegistro = async (datos: {
     titulo: string;
     fechaInicio: string;
@@ -224,6 +238,7 @@ export default function Home() {
     modalidadId: any;
     saving?: boolean;
   }) => {
+    setIsLoadingSaveContratacion(true);
     const fechasCalculadas = calcularFechas(
       datos.fechaInicio,
       datos.modalidadId
@@ -259,14 +274,14 @@ export default function Home() {
 
       if (!res.ok) throw new Error("Error al crear registro");
 
-      const nuevo = await res.json();
-
       // Recargar registros después de agregar uno nuevo
       await fetchRegistros(currentPage, limit, searchTerm);
-      mostrarToast("Registro creado exitosamente");
+      notifySuccess("Registro creado exitosamente");
     } catch (error) {
       console.error("Error en agregarRegistro:", error);
-      mostrarToast("Error al crear el registro");
+      notifyError("Error al crear el registro");
+    } finally {
+      setIsLoadingSaveContratacion(false);
     }
   };
 
@@ -302,7 +317,6 @@ export default function Home() {
   };
 
   if (loading) {
-    // Mientras carga el estado de autenticación
     return (
       <div className="flex justify-center items-center h-screen">
         <span>Cargando...</span>
@@ -311,17 +325,55 @@ export default function Home() {
   }
 
   if (!user) {
-    // Mientras redirige no mostrar nada (o loader)
     return null;
   }
+
+  const agregarFeriado = async (nuevaFecha: string, nuevoNombre: string) => {
+    const res = await fetch("/api/feriados", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fecha: nuevaFecha, nombre: nuevoNombre }),
+    });
+
+    if (!res.ok) {
+      console.error("Error al agregar feriado:", res.statusText);
+      return;
+    }
+    notifySuccess("¡Feriado agregado exitosamente!");
+
+    const nuevoFeriado = await res.json();
+    setFeriados((prev) => [...prev, nuevoFeriado]);
+  };
+
+  const eliminarFeriado = async (id: number) => {
+    const res = await fetch(`/api/feriados/${id}`, {
+      // ← Cambio aquí: agregar /${id}
+      method: "DELETE",
+      // ← Eliminar body y headers ya que no los necesitas
+    });
+
+    if (!res.ok) {
+      notifyError("Error al eliminar feriado");
+      return;
+    }
+    notifySuccess("¡Feriado eliminado exitosamente!");
+
+    setFeriados((prev) => prev.filter((f) => f.id !== id));
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
       <main className="container mx-auto px-4 py-6 space-y-8">
+        <GestorFeriados
+          feriados={feriados}
+          onAgregar={agregarFeriado}
+          onEliminar={eliminarFeriado}
+        />
         <FormularioCalculo
           onSubmit={agregarRegistro}
           modalidades={modalidades}
+          loading={isLoadingSaveContratacion}
         />
         <ListadoRegistros
           registros={registros}
@@ -334,10 +386,9 @@ export default function Home() {
           searchTerm={searchTerm}
         />
       </main>
-      {showToast && (
-        <Toast message={toastMessage} onClose={() => setShowToast(false)} />
-      )}
+
       <Footer />
+      <ToastContainer />
     </div>
   );
 }

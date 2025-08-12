@@ -17,10 +17,10 @@ export default function LoginPage() {
   const notifySuccess = (msg: string) =>
     toast.success(msg, {
       position: "top-right",
-      autoClose: 5000,
+      autoClose: 4000,
       hideProgressBar: false,
       closeOnClick: false,
-      pauseOnHover: true,
+      closeButton: false,
       draggable: true,
       progress: undefined,
       theme: "colored",
@@ -28,10 +28,10 @@ export default function LoginPage() {
   const notifyError = (msg: string) =>
     toast.error(msg, {
       position: "top-right",
-      autoClose: 5000,
+      autoClose: 4000,
       hideProgressBar: false,
       closeOnClick: false,
-      pauseOnHover: true,
+      closeButton: false,
       draggable: true,
       progress: undefined,
       theme: "colored",
@@ -189,7 +189,7 @@ export default function LoginPage() {
           <p className="text-sm text-gray-700">
             ¿Olvidaste tu contraseña?{" "}
             <a
-             href="/forgot-password" 
+              href="/forgot-password"
               className="text-red-500 font-bold hover:text-red-700 underline"
             >
               Recuperar acceso
@@ -203,7 +203,10 @@ export default function LoginPage() {
           alt="Logo de la oficina desarrolladora"
           className="w-12 h-auto mx-auto rounded-full"
         />
-        <p>© 2025 Todos los derechos reservados - Jefatura de Tenologías de la Información.</p>
+        <p>
+          © 2025 Todos los derechos reservados - Jefatura de Tenologías de la
+          Información.
+        </p>
       </div>
       <ToastContainer />
     </div>

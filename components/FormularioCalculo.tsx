@@ -14,13 +14,14 @@ interface FormularioCalculoProps {
     modalidadId: number;
     saving?: boolean;
   }) => void;
-
+  loading?: boolean;
   modalidades: Modalidad[];
 }
 
 export default function FormularioCalculo({
   onSubmit,
   modalidades,
+  loading,
 }: FormularioCalculoProps) {
   const [titulo, setTitulo] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
@@ -126,10 +127,11 @@ export default function FormularioCalculo({
         <div className="flex justify-end">
           <button
             type="submit"
-            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium transition-colors flex items-center"
+            className={`  bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium transition-colors flex items-center`}
+            disabled={loading}
           >
             <Calculator className="mr-2" size={16} />
-            Calcular Fechas
+            {loading ? "Calculando..." : "Calcular Fechas"}
           </button>
         </div>
       </form>

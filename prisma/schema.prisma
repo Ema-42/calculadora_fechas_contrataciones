@@ -35,7 +35,8 @@ model Contratacion {
 }
 
 model Feriado {
-  id     Int      @id @default(autoincrement())
-  fecha  DateTime @unique
-  nombre String
+  id        Int      @id @default(autoincrement())
+  fecha     DateTime @unique
+  nombre    String
+  eliminado Boolean  @default(false)
 }
