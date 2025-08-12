@@ -45,6 +45,12 @@ export default function Navbar() {
     }
   };
 
+  const getUserDisplayName = () => {
+    //if (auth.currentUser?.displayName) return auth.currentUser.displayName;
+    if (auth.currentUser?.email) return auth.currentUser.email.split("@")[0];
+    return "";
+  };
+
   return (
     <nav className="bg-red-800 text-white shadow-lg sticky top-0 z-40">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -66,8 +72,11 @@ export default function Navbar() {
                   className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover cursor-pointer ring-2 ring-white/30 hover:ring-white/60 transition-all"
                 />
               )}
-              <span className="cursor-pointer hover:text-red-200 transition-colors truncate max-w-32 lg:max-w-none">
-                Hola, {auth.currentUser?.displayName || auth.currentUser?.email}
+              <span className="cursor-pointer  transition-colors truncate max-w-32 lg:max-w-none">
+                👋​ Hola,{" "}
+                <span className="px-2 py-1  bg-gray-100/20 rounded-full hover:bg-gray-100/35">
+                  {getUserDisplayName()}
+                </span>
               </span>
 
               <div
