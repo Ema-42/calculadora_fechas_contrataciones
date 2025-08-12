@@ -150,7 +150,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
             }
           >
             {/* Sección de Encabezado de la Tarjeta */}
-            <div className="bg-gray-200  pt-4 rounded-t-lg mb-3">
+            <div className="bg-blue-700/10  pt-4 rounded-t-lg mb-3">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-semibold text-gray-700 pl-4">
                   ID: #{registro.id}
