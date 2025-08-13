@@ -123,10 +123,10 @@ export default function FormularioCalculo({
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex sm:justify-end ">
           <button
             type="submit"
-            className={`  bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium transition-colors flex items-center`}
+            className={`  justify-center w-full md:w-auto  bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-medium transition-colors flex items-center`}
             disabled={loading}
           >
             <Calculator className="mr-2" size={16} />

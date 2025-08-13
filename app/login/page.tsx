@@ -68,6 +68,43 @@ export default function LoginPage() {
     }
   };
 
+    /* const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const email = e.currentTarget.username.value;
+    const password = e.currentTarget.password.value;
+
+    try {
+      // Llamar a tu API de login en lugar de Firebase directamente
+      console.log("Intentando iniciar sesión con:", email, password);
+
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error en el login");
+      }
+
+      // Guardar token en localStorage
+      //tokenStorage.setToken(data.token);
+
+      notifySuccess("¡Inicio de sesión exitoso!");
+      router.push("/home");
+    } catch (error: any) {
+      notifyError(`Error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }; */
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };

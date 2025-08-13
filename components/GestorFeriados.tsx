@@ -248,7 +248,7 @@ export default function GestorFeriados({
                       {feriadosDelMes.map((feriado) => (
                         <div
                           key={feriado.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                          className="flex items-center justify-between p-3 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
                         >
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-gray-900 truncate">
