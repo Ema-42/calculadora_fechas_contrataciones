@@ -4,12 +4,12 @@ import { prisma } from "@/lib/prisma";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    
+
     // Obtener parámetros con valores por defecto
     const limit = parseInt(searchParams.get("limit") || "5");
     const page = parseInt(searchParams.get("page") || "1");
     const search = searchParams.get("search") || "";
-    
+
     // Validar parámetros
     if (limit < 1 || page < 1) {
       return NextResponse.json(
@@ -22,27 +22,36 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit;
 
     // Construir condiciones de búsqueda
-    const whereClause = search.trim() ? {
-      OR: [
-        {
-          titulo: {
-            contains: search.trim(),
-            mode: "insensitive" as const,
-          },
-        },
-        {
-          modalidad: {
-            nombre: {
-              contains: search.trim(),
-              mode: "insensitive" as const,
+    const whereClause = search.trim()
+      ? {
+          OR: [
+            {
+              titulo: {
+                contains: search.trim(),
+                mode: "insensitive" as const,
+              },
             },
-          },
-        },
-        {
-          id: isNaN(parseInt(search.trim())) ? undefined : parseInt(search.trim()),
-        },
-      ].filter(condition => condition.id !== undefined || condition.titulo || condition.modalidad),
-    } : {};
+            {
+              modalidad: {
+                nombre: {
+                  contains: search.trim(),
+                  mode: "insensitive" as const,
+                },
+              },
+            },
+            {
+              id: isNaN(parseInt(search.trim()))
+                ? undefined
+                : parseInt(search.trim()),
+            },
+          ].filter(
+            (condition) =>
+              condition.id !== undefined ||
+              condition.titulo ||
+              condition.modalidad
+          ),
+        }
+      : {};
 
     // Obtener total de registros para calcular páginas (con filtro de búsqueda)
     const totalRegistros = await prisma.contratacion.count({
@@ -92,7 +101,6 @@ export async function GET(request: Request) {
   }
 }
 
-
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -101,8 +109,8 @@ export async function POST(req: Request) {
       fechaInicio,
       fechaGeneracion,
       modalidadId,
-      monto,
-      fechaPublicacion,
+      monto = 0,
+      fechaPresentacion,
       fechaApertura,
       fechaAdjudicacion,
       fechaPresentacionDocs,
@@ -116,7 +124,7 @@ export async function POST(req: Request) {
         fechaGeneracion,
         modalidadId,
         monto,
-        fechaPublicacion,
+        fechaPresentacion,
         fechaApertura,
         fechaAdjudicacion,
         fechaPresentacionDocs,

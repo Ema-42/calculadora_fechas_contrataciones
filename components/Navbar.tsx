@@ -52,7 +52,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-red-800 text-white shadow-lg sticky top-0 z-40">
+    <nav className="bg-red-600 text-white shadow-lg sticky top-0 z-40">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo/Title */}

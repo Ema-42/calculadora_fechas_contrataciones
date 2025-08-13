@@ -10,7 +10,7 @@ interface FormularioCalculoProps {
   onSubmit: (datos: {
     titulo: string;
     fechaInicio: string;
-    monto: number;
+    monto?: number;
     modalidadId: number;
     saving?: boolean;
   }) => void;
@@ -25,13 +25,13 @@ export default function FormularioCalculo({
 }: FormularioCalculoProps) {
   const [titulo, setTitulo] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
-  const [monto, setMonto] = useState("");
+  const [monto, setMonto] = useState("0");
   const [modalidad, setModalidad] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!fechaInicio || !monto || !modalidad) {
+    if (!fechaInicio || !modalidad) {
       alert("Por favor complete todos los campos requeridos");
       return;
     }
@@ -49,12 +49,12 @@ export default function FormularioCalculo({
     // Limpiar formulario
     setTitulo("");
     setFechaInicio("");
-    setMonto("");
+    setMonto("0");
     setModalidad("");
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-gray-500/20 rounded-lg shadow-md p-6">
       <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
         <Calculator className="mr-2 text-red-600" size={24} />
         Nuevo Registro
@@ -90,15 +90,14 @@ export default function FormularioCalculo({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Monto <span className="text-red-500">*</span>
+              Monto (Opcional)
             </label>
             <input
               type="number"
-              step="0.01"
+              step="1"
               min="0"
               value={monto}
               onChange={(e) => setMonto(e.target.value)}
-              required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               placeholder="0.00"
             />

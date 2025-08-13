@@ -15,7 +15,7 @@ interface Registro {
   fechaInicio: string;
   modalidad: { id: number; nombre: string };
   monto: number;
-  fechaPublicacion: string;
+  fechaPresentacion: string;
   fechaApertura: string;
   fechaAdjudicacion: string;
   fechaPresentacionDocs: string;

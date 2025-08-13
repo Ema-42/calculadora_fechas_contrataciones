@@ -54,7 +54,7 @@ const getPdfTableData = (registros: Registro[]) => {
     "Monto",
     "F. Registro",
     "F. Inicio",
-    "F. Publicación",
+    "F. Presentación",
     "F. Apertura",
     "F. Adjudicación",
     "F. Presentación",
@@ -70,7 +70,7 @@ const getPdfTableData = (registros: Registro[]) => {
       formatearMonto(registro.monto),
       formatearFecha(registro.fechaGeneracion, true),
       formatearFechaSimple(registro.fechaInicio),
-      formatearFechaSimple(registro.fechaPublicacion),
+      formatearFechaSimple(registro.fechaPresentacion),
       formatearFechaSimple(registro.fechaApertura),
       formatearFechaSimple(registro.fechaAdjudicacion),
       formatearFechaSimple(registro.fechaPresentacionDocs),
@@ -220,7 +220,7 @@ export const generateSingleRecordPdf = (
   y += 10;
 
   const dates = [
-    ["Publicación", formatearFechaSimple(registro.fechaPublicacion)],
+    ["Presentación", formatearFechaSimple(registro.fechaPresentacion)],
     ["Apertura", formatearFechaSimple(registro.fechaApertura)],
     ["Adjudicación", formatearFechaSimple(registro.fechaAdjudicacion)],
     ["Presentación Docs", formatearFechaSimple(registro.fechaPresentacionDocs)],

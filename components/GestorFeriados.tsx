@@ -145,23 +145,25 @@ export default function GestorFeriados({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md">
+    <div className=" shadow-md">
       {/* Header siempre visible */}
       <div
-        className="p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+        className={`p-6 cursor-pointer bg-red-600  hover:bg-red-700 rounded-tr-lg rounded-tl-lg  transition-colors ${
+          !desplegado && "rounded-br-lg rounded-bl-lg"
+        }`}
         onClick={() => setDesplegado(!desplegado)}
       >
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-            <Calendar className="mr-2 text-red-700" size={24} />
+          <h2 className="text-xl font-semibold text-white flex items-center">
+            <Calendar className="mr-2 text-white" size={24} />
             Gestionar de Feriados
           </h2>
 
-          <div className="text-red-700">
+          <div className="text-white">
             {desplegado ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
           </div>
         </div>
-        <h4 className="mt-1 text-xs text-gray-600">
+        <h4 className="mt-1 text-xs text-gray-300">
           En esta sección puedes agregar, ver y eliminar los feriados de la
           gestión.
         </h4>
@@ -169,24 +171,25 @@ export default function GestorFeriados({
 
       {/* Contenido desplegable */}
       {desplegado && (
-        <div className="px-6 pb-6">
+        <div className="px-6 pb-6 bg-white ">
           <form onSubmit={handleSubmit} className="mb-6 border-t pt-6">
-            <div className="bg-gradient-to-r from-sky-50 to-sky-100 border border-sky-200 p-3 md:p-4 mb-6 rounded-lg">
+            <div className="bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200 p-3 md:p-4 mb-6 rounded-lg">
               <div className="flex items-center space-x-3 mb-2">
-                <Info className="h-4 w-4 md:h-5 md:w-5 text-sky-600 flex-shrink-0" />
-                <h4 className="text-xs font-bold  md:text-sm  text-sky-800">
+                <Info className="h-4 w-4 md:h-5 md:w-5 text-amber-600 flex-shrink-0" />
+                <h4 className="text-xs font-bold md:text-sm text-amber-800">
                   Gestión de Feriados {new Date().getFullYear()}
                 </h4>
               </div>
-              <p className="text-xs md:text-sm text-sky-700 leading-relaxed">
+              <p className="text-xs md:text-sm text-amber-700 leading-relaxed">
                 Los feriados registrados son válidos solo para este año. Al
                 cambiar de gestión, se eliminarán automáticamente y deberán
                 cargarse los nuevos.
               </p>
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-800 mb-1">
                   Fecha
                 </label>
                 <input
@@ -199,7 +202,7 @@ export default function GestorFeriados({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-800 mb-1">
                   Nombre del Feriado
                 </label>
                 <input
@@ -215,7 +218,7 @@ export default function GestorFeriados({
               <div>
                 <button
                   type="submit"
-                  className="w-full h-[42px] bg-red-700 hover:bg-red-800 text-white px-4 rounded-md font-medium transition-colors flex items-center justify-center"
+                  className="w-full h-[42px] bg-red-600 hover:bg-red-700 text-white px-4 rounded-md font-medium transition-colors flex items-center justify-center"
                 >
                   <Plus className="mr-2" size={16} />
                   Agregar Feriado
@@ -231,14 +234,14 @@ export default function GestorFeriados({
             </h3>
 
             {Object.keys(grupos).length === 0 ? (
-              <p className="text-gray-500 text-center py-4">
+              <p className="text-gray-800 text-center py-4">
                 No hay feriados registrados
               </p>
             ) : (
-              <div className="max-h-96 overflow-y-auto space-y-6 border border-gray-300 rounded-lg p-2">
+              <div className="max-h-96 overflow-y-auto space-y-6 border border-red-500/35 rounded-lg p-2">
                 {Object.entries(grupos).map(([mesAno, feriadosDelMes]) => (
                   <div key={mesAno} className="space-y-3">
-                    <h4 className="text-md font-medium text-red-700 capitalize border-b border-red-200 pb-2">
+                    <h4 className="text-md font-medium text-gray-800 capitalize border-b border-red-400/40 pb-2">
                       {mesAno}
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">

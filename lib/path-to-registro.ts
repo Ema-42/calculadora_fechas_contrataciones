@@ -5,7 +5,7 @@ export interface Registro {
   fechaInicio: string
   modalidad: string
   monto: number
-  fechaPublicacion: string
+  fechaPresentacion: string
   fechaApertura: string
   fechaAdjudicacion: string
   fechaPresentacionDocs: string

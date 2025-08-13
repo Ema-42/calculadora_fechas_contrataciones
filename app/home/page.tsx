@@ -16,7 +16,7 @@ export interface Registro {
   fechaInicio: string;
   modalidad: { id: number; nombre: string };
   monto: number;
-  fechaPublicacion: string;
+  fechaPresentacion: string;
   fechaApertura: string;
   fechaAdjudicacion: string;
   fechaPresentacionDocs: string;
@@ -32,10 +32,10 @@ export interface Feriado {
 export interface Modalidad {
   id: number;
   nombre: string;
-  publicacion: string;
+  presentacion: string;
   apertura: string;
   adjudicacion: string;
-  presentacion: string;
+  presentacion_docs: string;
   firma: string;
 }
 
@@ -234,7 +234,7 @@ export default function Home() {
   const agregarRegistro = async (datos: {
     titulo: string;
     fechaInicio: string;
-    monto: number;
+    monto?: number;
     modalidadId: any;
     saving?: boolean;
   }) => {
@@ -250,8 +250,8 @@ export default function Home() {
       fechaGeneracion: new Date().toISOString(),
       modalidadId: datos.modalidadId,
       monto: datos.monto,
-      fechaPublicacion: new Date(
-        fechasCalculadas.fechaPublicacion
+      fechaPresentacion: new Date(
+        fechasCalculadas.fechaPresentacion
       ).toISOString(),
       fechaApertura: new Date(fechasCalculadas.fechaApertura).toISOString(),
       fechaAdjudicacion: new Date(
@@ -299,7 +299,7 @@ export default function Home() {
     }
 
     const config = {
-      publicacion: Number(modalidad.publicacion),
+      presentacion_docs: Number(modalidad.presentacion_docs),
       apertura: Number(modalidad.apertura),
       adjudicacion: Number(modalidad.adjudicacion),
       presentacion: Number(modalidad.presentacion),
@@ -307,10 +307,10 @@ export default function Home() {
     };
 
     return {
-      fechaPublicacion: agregarDiasHabiles(fecha, config.publicacion),
+      fechaPresentacion: agregarDiasHabiles(fecha, config.presentacion),
       fechaApertura: agregarDiasHabiles(fecha, config.apertura),
       fechaAdjudicacion: agregarDiasHabiles(fecha, config.adjudicacion),
-      fechaPresentacionDocs: agregarDiasHabiles(fecha, config.presentacion),
+      fechaPresentacionDocs: agregarDiasHabiles(fecha, config.presentacion_docs),
       fechaFirmaContratos: agregarDiasHabiles(fecha, config.firma),
     };
   };
