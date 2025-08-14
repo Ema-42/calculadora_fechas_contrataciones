@@ -1,66 +1,42 @@
 // app/api/auth/login/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { signInWithEmailAndPassword } from 'firebase/auth';
- 
-import { auth } from '@/app/firebase/config';
-import { generateToken } from '@/lib/jwt';
+import { NextRequest, NextResponse } from "next/server";
+import { generateToken } from "@/lib/jwt";
+import { serialize } from "cookie";
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: 'Email y contraseña son requeridos' },
-        { status: 400 }
-      );
-    }
-
-    // Autenticar con Firebase
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    const { user } = await request.json();
 
     // Generar JWT
     const token = generateToken({
       userId: user.uid,
-      email: user.email || email,
+      email: user.email,
     });
 
-    return NextResponse.json({
+    // Serializar cookie
+    const serialized = serialize("myToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 1 semana
+    });
+
+    // Crear respuesta y agregar cookie
+    const response = NextResponse.json({
       success: true,
-      message: 'Inicio de sesión exitoso',
-      token,
+      message: "Inicio de sesión exitoso",
       user: {
-        uid: user.uid,
         email: user.email,
-        displayName: user.displayName,
       },
     });
 
+    response.headers.set("Set-Cookie", serialized);
+
+    return response;
   } catch (error: any) {
-    console.error('Error en login:', error);
-    
-    // Errores específicos de Firebase Auth
-    let errorMessage = 'Error interno del servidor';
-    let statusCode = 500;
+    console.error("Error en login:", error.message);
 
-    if (error.code === 'auth/user-not-found') {
-      errorMessage = 'Usuario no encontrado';
-      statusCode = 404;
-    } else if (error.code === 'auth/wrong-password') {
-      errorMessage = 'Contraseña incorrecta';
-      statusCode = 401;
-    } else if (error.code === 'auth/invalid-email') {
-      errorMessage = 'Email inválido';
-      statusCode = 400;
-    } else if (error.code === 'auth/user-disabled') {
-      errorMessage = 'Usuario deshabilitado';
-      statusCode = 403;
-    }
-
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: statusCode }
-    );
+    return NextResponse.json({ error: error.message }, { status: 401 });
   }
 }

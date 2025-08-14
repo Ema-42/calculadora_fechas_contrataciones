@@ -6,10 +6,13 @@ import { auth } from "@/app/firebase/config";
 import { LogOut } from "lucide-react";
 import { signOut } from "firebase/auth";
 import LogoutModal from "./LogoutModal";
+import axios from "axios";
+import FullScreenLoader from "./FullScreenLoader";
 export default function Navbar() {
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null); // Referencia al contenedor del calendario
   const [mostrarTooltipMobile, setMostrarTooltipMobile] = useState(false);
+  const [loadingLogout, setLoadingLogout] = useState(false);
 
   const [openLogout, setOpenLogout] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -38,12 +41,18 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
+      setLoadingLogout(true); // mostrar loader
       await signOut(auth);
+      await axios("/api/auth/logout", { method: "POST" });
       window.location.href = "/login";
     } catch (error) {
       console.error("Error signing out:", error);
+      setLoadingLogout(false);
     }
   };
+  if (loadingLogout) {    
+    return <FullScreenLoader />;
+  }
 
   const getUserDisplayName = () => {
     //if (auth.currentUser?.displayName) return auth.currentUser.displayName;

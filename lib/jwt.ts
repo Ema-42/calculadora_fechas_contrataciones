@@ -1,8 +1,8 @@
 // lib/jwt.ts
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-//const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "30min";
 
 export interface JWTPayload {
   userId: string;
@@ -14,37 +14,40 @@ export interface JWTPayload {
 export class JWTError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'JWTError';
+    this.name = "JWTError";
   }
 }
 
 // Generar token
-export function generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
+export function generateToken(
+  payload: Omit<JWTPayload, "iat" | "exp">
+): string {
   if (!JWT_SECRET) {
-    throw new JWTError('JWT_SECRET no está configurado');
+    throw new JWTError("JWT_SECRET no está configurado");
   }
-  
+
+  // @ts-ignore
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: '7d',
+    expiresIn: JWT_EXPIRES_IN,
   });
 }
 
 // Verificar token
-export function verifyToken(token: string): JWTPayload {
+export function verifyToken(token: string) {
   if (!JWT_SECRET) {
-    throw new JWTError('JWT_SECRET no está configurado');
+    throw new JWTError("JWT_SECRET no está configurado");
   }
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as JWTPayload;
-    return decoded;
+    return { ok: true, data: decoded, message: "Token válido" };
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
-      throw new JWTError('Token expirado');
+      return { ok: false, message: "Token expirado", data: null };
     }
     if (error instanceof jwt.JsonWebTokenError) {
-      throw new JWTError('Token inválido');
+      return { ok: false, message: "Token inválido", data: null };
     }
-    throw new JWTError('Error al verificar token');
+    throw { ok: false, message: "Error al verificar token", data: null };
   }
 }

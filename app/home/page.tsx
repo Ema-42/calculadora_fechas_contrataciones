@@ -9,6 +9,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import GestorFeriados from "@/components/GestorFeriados";
 import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+import FullScreenLoader from "@/components/FullScreenLoader";
 export interface Registro {
   id: number;
   fechaGeneracion: string;
@@ -68,6 +70,22 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const verificarToken = async () => {
+      try {
+        const res = await axios.get("/api/auth/verify-token");
+        if (!res.data.ok) {
+          router.push("/login");
+        }
+      } catch (error) {
+        // Si hay error (401 o expirado), redirige al login
+        router.push("/login");
+      }
+    };
+
+    verificarToken();
+  }, [router]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -273,7 +291,7 @@ export default function Home() {
       });
 
       if (!res.ok) throw new Error("Error al crear registro");
- 
+
       await fetchRegistros(currentPage, limit, searchTerm);
       notifySuccess("Registro creado exitosamente");
     } catch (error) {
@@ -310,17 +328,16 @@ export default function Home() {
       fechaPresentacion: agregarDiasHabiles(fecha, config.presentacion),
       fechaApertura: agregarDiasHabiles(fecha, config.apertura),
       fechaAdjudicacion: agregarDiasHabiles(fecha, config.adjudicacion),
-      fechaPresentacionDocs: agregarDiasHabiles(fecha, config.presentacion_docs),
+      fechaPresentacionDocs: agregarDiasHabiles(
+        fecha,
+        config.presentacion_docs
+      ),
       fechaFirmaContratos: agregarDiasHabiles(fecha, config.firma),
     };
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <span>Cargando...</span>
-      </div>
-    );
+    return <FullScreenLoader />;
   }
 
   if (!user) {

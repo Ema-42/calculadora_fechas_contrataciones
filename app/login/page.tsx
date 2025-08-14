@@ -1,18 +1,36 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase/config";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { ToastContainer, toast } from "react-toastify";
-import { finalization } from "process";
 
+import axios from "axios";
+import { useAuth } from "@/hooks/useAuth";
+import FullScreenLoader from "@/components/FullScreenLoader";
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingHome, setLoadingHome] = useState(false);
+
+  /*   useEffect(() => {
+    setLoadingHome(true);
+    const verificarToken = async () => {
+      try {
+        const res = await axios.get("/api/auth/verify-token");
+        if (res.data.ok) {
+          router.push("/home");
+        }
+      } catch {}
+    };
+
+    verificarToken();
+    setLoadingHome(false);
+  }, [router]); */
 
   const notifySuccess = (msg: string) =>
     toast.success(msg, {
@@ -38,7 +56,7 @@ export default function LoginPage() {
     });
 
   // Mantener la función de Google pero comentada
-  const signIn = async (): Promise<void> => {
+  /*   const signIn = async (): Promise<void> => {
     try {
       setIsLoading(true);
       await signInWithPopup(auth, googleProvider);
@@ -48,7 +66,7 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }; */
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,55 +77,38 @@ export default function LoginPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      if (auth.currentUser) {
+        setLoadingHome(true); // mostrar loader
+        console.log("Usuario autenticado:", auth.currentUser);
+        const response = await axios.post("/api/auth/login", {
+          user: auth.currentUser,
+        });
+        console.log("Respuesta del API:", response.data);
+      }
+
       notifySuccess("¡Inicio de sesión exitoso!");
       router.push("/home");
+      setLoadingHome(false);
     } catch (error: any) {
-      notifyError(`Error: ${error.message}`);
+      let errorMessage = "Error interno del servidor";
+
+      if (error.code === "auth/invalid-credential") {
+        errorMessage = "Credenciales inválidas";
+      }
+
+      notifyError(`Error: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
   };
-
-    /* const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    const email = e.currentTarget.username.value;
-    const password = e.currentTarget.password.value;
-
-    try {
-      // Llamar a tu API de login en lugar de Firebase directamente
-      console.log("Intentando iniciar sesión con:", email, password);
-
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Error en el login");
-      }
-
-      // Guardar token en localStorage
-      //tokenStorage.setToken(data.token);
-
-      notifySuccess("¡Inicio de sesión exitoso!");
-      router.push("/home");
-    } catch (error: any) {
-      notifyError(`Error: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  }; */
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  if (loadingHome) {
+    return <FullScreenLoader />;
+  }
 
   return (
     <div className="flex flex-col px-4 sm:px-0 min-h-screen items-center justify-center bg-gray-300/80">
