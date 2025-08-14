@@ -79,11 +79,11 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     await signInWithEmailAndPassword(auth, email, password);
     if (auth.currentUser) {
       setLoadingHome(true); // mostrar loader global
-      console.log("Usuario autenticado:", auth.currentUser);
+      //console.log("Usuario autenticado:", auth.currentUser);
       const response = await axios.post("/api/auth/login", {
         user: auth.currentUser,
       });
-      console.log("Respuesta del API:", response.data);
+      //console.log("Respuesta del API:", response.data);
     }
 
     notifySuccess("¡Inicio de sesión exitoso!");
