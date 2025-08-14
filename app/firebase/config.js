@@ -22,6 +22,6 @@ let firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
-console.log("Firebase auth instance:", auth);
+//console.log("Firebase auth instance:", auth);
 
 export const googleProvider = new GoogleAuthProvider();
