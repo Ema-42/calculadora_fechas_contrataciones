@@ -68,39 +68,39 @@ export default function LoginPage() {
     }
   }; */
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setIsLoading(true);
 
-    const email = e.currentTarget.username.value;
-    const password = e.currentTarget.password.value;
+  const email = e.currentTarget.username.value;
+  const password = e.currentTarget.password.value;
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      if (auth.currentUser) {
-        setLoadingHome(true); // mostrar loader
-        console.log("Usuario autenticado:", auth.currentUser);
-        const response = await axios.post("/api/auth/login", {
-          user: auth.currentUser,
-        });
-        console.log("Respuesta del API:", response.data);
-      }
-
-      notifySuccess("¡Inicio de sesión exitoso!");
-      router.push("/home");
-      setLoadingHome(false);
-    } catch (error: any) {
-      let errorMessage = "Error interno del servidor";
-
-      if (error.code === "auth/invalid-credential") {
-        errorMessage = "Credenciales inválidas";
-      }
-
-      notifyError(`Error: ${errorMessage}`);
-    } finally {
-      setIsLoading(false);
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    if (auth.currentUser) {
+      setLoadingHome(true); // mostrar loader global
+      console.log("Usuario autenticado:", auth.currentUser);
+      const response = await axios.post("/api/auth/login", {
+        user: auth.currentUser,
+      });
+      console.log("Respuesta del API:", response.data);
     }
-  };
+
+    notifySuccess("¡Inicio de sesión exitoso!");
+    router.push("/home"); // No setLoadingHome(false) aquí
+  } catch (error: any) {
+    let errorMessage = "Error interno del servidor";
+
+    if (error.code === "auth/invalid-credential") {
+      errorMessage = "Credenciales inválidas";
+    }
+
+    notifyError(`Error: ${errorMessage}`);
+    setLoadingHome(false); // Solo en caso de error
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
