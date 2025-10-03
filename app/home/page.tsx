@@ -233,16 +233,26 @@ export default function Home() {
 
   const agregarDiasHabiles = (fechaInicio: Date, diasHabiles: number) => {
     const fecha = new Date(fechaInicio);
+    fecha.setDate(fecha.getDate() + 1); // Comenzamos desde el día siguiente
+
     let diasAgregados = 0;
 
+    // Avanzamos hasta encontrar el primer día hábil
     while (!esDiaHabil(fecha)) {
       fecha.setDate(fecha.getDate() + 1);
     }
 
+    // Contamos los días hábiles
     while (diasAgregados < diasHabiles) {
-      fecha.setDate(fecha.getDate() + 1);
+      // Quitamos el -1
       if (esDiaHabil(fecha)) {
         diasAgregados++;
+        if (diasAgregados < diasHabiles) {
+          // Solo avanzamos si no hemos llegado al total
+          fecha.setDate(fecha.getDate() + 1);
+        }
+      } else {
+        fecha.setDate(fecha.getDate() + 1);
       }
     }
 
