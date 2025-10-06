@@ -1,0 +1,114 @@
+@keyframes animate {
+    0%{
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+        border-radius: 0;
+    }
+    100%{
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+        border-radius: 50%;
+    }
+}
+
+.background {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    background: #810909;
+    overflow: hidden;
+}
+.background li {
+    position: absolute;
+    display: block;
+    list-style: none;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    animation: animate 15s linear infinite;
+}
+
+
+
+
+.background li:nth-child(0) {
+    left: 86%;
+    width: 59px;
+    height: 59px;
+    bottom: -59px;
+    animation-delay: 1s;
+}
+.background li:nth-child(1) {
+    left: 51%;
+    width: 44px;
+    height: 44px;
+    bottom: -44px;
+    animation-delay: 2s;
+}
+.background li:nth-child(2) {
+    left: 72%;
+    width: 73px;
+    height: 73px;
+    bottom: -73px;
+    animation-delay: 7s;
+}
+.background li:nth-child(3) {
+    left: 89%;
+    width: 72px;
+    height: 72px;
+    bottom: -72px;
+    animation-delay: 15s;
+}
+.background li:nth-child(4) {
+    left: 19%;
+    width: 74px;
+    height: 74px;
+    bottom: -74px;
+    animation-delay: 5s;
+}
+.background li:nth-child(5) {
+    left: 74%;
+    width: 60px;
+    height: 60px;
+    bottom: -60px;
+    animation-delay: 19s;
+}
+.background li:nth-child(6) {
+    left: 37%;
+    width: 57px;
+    height: 57px;
+    bottom: -57px;
+    animation-delay: 22s;
+}
+.background li:nth-child(7) {
+    left: 30%;
+    width: 43px;
+    height: 43px;
+    bottom: -43px;
+    animation-delay: 26s;
+}
+.background li:nth-child(8) {
+    left: 52%;
+    width: 52px;
+    height: 52px;
+    bottom: -52px;
+    animation-delay: 10s;
+}
+.background li:nth-child(9) {
+    left: 20%;
+    width: 69px;
+    height: 69px;
+    bottom: -69px;
+    animation-delay: 3s;
+}
+.background li:nth-child(10) {
+    left: 25%;
+    width: 39px;
+    height: 39px;
+    bottom: -39px;
+    animation-delay: 19s;
+}
