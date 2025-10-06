@@ -95,6 +95,9 @@ export default function Footer() {
               <p className="text-sm text-red-200">
                 &copy; {currentYear} Todos los derechos reservados.
               </p>
+              <p className="text-sm font-extralight text-red-200">
+                Version 1.0.0
+              </p>
             </div>
           </div>
         </div>

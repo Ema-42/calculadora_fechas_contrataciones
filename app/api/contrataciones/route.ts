@@ -17,7 +17,6 @@ export async function GET(request: Request) {
       );
     }
 
-    // Verificar la validez del token
     const { ok } = verifyToken(token);
     if (!ok) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
@@ -38,7 +37,6 @@ export async function GET(request: Request) {
       );
     }
 
-    // Calcular offset para la paginación
     const offset = (page - 1) * limit;
 
     // Construir condiciones de búsqueda
@@ -73,7 +71,6 @@ export async function GET(request: Request) {
         }
       : {};
 
-    // Obtener total de registros para calcular páginas (con filtro de búsqueda)
     const totalRegistros = await prisma.contratacion.count({
       where: whereClause,
     });
@@ -95,7 +92,7 @@ export async function GET(request: Request) {
     const totalPages = Math.ceil(totalRegistros / limit);
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
-
+    
     const response = {
       data: registros,
       pagination: {
@@ -110,6 +107,8 @@ export async function GET(request: Request) {
       },
       search: search.trim(), // Incluir término de búsqueda en la respuesta
     };
+    
+    //console.log("Total registros:", response);
 
     return NextResponse.json(response);
   } catch (error: any) {

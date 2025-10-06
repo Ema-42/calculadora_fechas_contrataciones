@@ -148,7 +148,7 @@ export default function GestorFeriados({
     <div className=" shadow-md">
       {/* Header siempre visible */}
       <div
-        className={`p-6 cursor-pointer bg-red-600  hover:bg-red-700 rounded-tr-lg rounded-tl-lg  transition-colors ${
+        className={` px-4 py-3 cursor-pointer bg-red-600  hover:bg-red-700 rounded-tr-lg rounded-tl-lg  transition-colors ${
           !desplegado && "rounded-br-lg rounded-bl-lg"
         }`}
         onClick={() => setDesplegado(!desplegado)}
@@ -156,14 +156,14 @@ export default function GestorFeriados({
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-white flex items-center">
             <Calendar className="mr-2 text-white" size={24} />
-            Gestionar de Feriados
+            Gestionar Feriados
           </h2>
 
           <div className="text-white">
             {desplegado ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
           </div>
         </div>
-        <h4 className="mt-1 text-xs text-gray-300">
+        <h4 className="mt-1 text-xs text-gray-200">
           En esta sección puedes agregar, ver y eliminar los feriados de la
           gestión.
         </h4>
@@ -177,13 +177,12 @@ export default function GestorFeriados({
               <div className="flex items-center space-x-3 mb-2">
                 <Info className="h-4 w-4 md:h-5 md:w-5 text-amber-600 flex-shrink-0" />
                 <h4 className="text-xs font-bold md:text-sm text-amber-800">
-                  Gestión de Feriados {new Date().getFullYear()}
+                  Feriados del {new Date().getFullYear()}
                 </h4>
               </div>
               <p className="text-xs md:text-sm text-amber-700 leading-relaxed">
-                Los feriados registrados son válidos solo para este año. Al
-                cambiar de gestión, se eliminarán automáticamente y deberán
-                cargarse los nuevos.
+                Los feriados que agregues aquí solo aplican para este año. Al
+                cambiar de gestión, se borrarán y deberás registrar los nuevos.
               </p>
             </div>
 

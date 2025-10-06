@@ -98,8 +98,8 @@ export default function ListadoRegistros({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex flex-col md:flex-row sm:items-center sm:justify-between mb-6">
+    <div className="bg-white rounded-lg shadow-md py-4 px-6">
+      <div className="flex flex-col md:flex-row sm:items-center sm:justify-between mb-4">
         <div className="mb-4 sm:mb-0">
           {paginationInfo && (
             <p className="text-sm text-gray-500 mt-1 mb-1">

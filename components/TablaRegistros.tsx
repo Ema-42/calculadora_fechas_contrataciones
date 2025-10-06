@@ -117,10 +117,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
           title: "Compartir información",
           text: texto,
         });
-        console.log("Compartido exitosamente");
-      } catch (error) {
-        console.error("Error al compartir:", error);
-      }
+      } catch (error) {}
     } else {
       alert("La función de compartir no está disponible en este navegador");
     }
@@ -149,8 +146,8 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
             }
           >
             {/* Sección de Encabezado de la Tarjeta */}
-            <div className="bg-blue-700/10  pt-4 rounded-t-lg mb-3">
-              <div className="flex justify-between items-center mb-2">
+            <div className="bg-blue-700/10  pt-4 rounded-t-lg mb-1">
+              <div className="flex justify-between items-center mb-1">
                 <span className="text-sm font-semibold text-gray-700 pl-4">
                   ID: #{registro.id}
                 </span>
@@ -162,11 +159,11 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                 </div>
               </div>
 
-              <h3 className="text-lg font-bold text-gray-900 uppercase text-center mb-2">
+              <h3 className="text-lg font-bold text-gray-900 uppercase text-center  ">
                 {registro.titulo || "Sin Título"}
               </h3>
               <div className="w-full text-center">
-                <span className="inline-block text-sm py-1  font-semibold bg-blue-700/20 text-blue-950 w-full">
+                 <span className="inline-block text-sm py-1  font-normal bg-blue-700/20 text-blue-950 w-full">
                   MODALIDAD: {registro.modalidad.nombre}
                 </span>
               </div>
@@ -196,7 +193,6 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
               </div>
 
               <div className="border-t border-gray-200 pt-3 mt-3">
-                <h4 className="font-semibold text-gray-800 mb-2">Fechas:</h4>
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-700">
                   {/* <li className="flex items-center">
                     <CalendarCheck className="mr-2 text-gray-500" size={16} />

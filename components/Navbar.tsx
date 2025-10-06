@@ -50,7 +50,7 @@ export default function Navbar() {
       setLoadingLogout(false);
     }
   };
-  if (loadingLogout) {    
+  if (loadingLogout) {
     return <FullScreenLoader />;
   }
 
@@ -181,7 +181,6 @@ export default function Navbar() {
         onClose={() => setOpenLogout(false)}
         onConfirm={() => {
           handleLogout();
-          console.log("Sesión cerrada");
           setOpenLogout(false);
         }}
       />

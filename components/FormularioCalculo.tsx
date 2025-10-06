@@ -25,7 +25,7 @@ export default function FormularioCalculo({
 }: FormularioCalculoProps) {
   const [titulo, setTitulo] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
-  const [monto, setMonto] = useState("0");
+  const [monto, setMonto] = useState("");
   const [modalidad, setModalidad] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -49,12 +49,12 @@ export default function FormularioCalculo({
     // Limpiar formulario
     setTitulo("");
     setFechaInicio("");
-    setMonto("0");
+    setMonto("");
     setModalidad("");
   };
 
   return (
-    <div className="bg-gray-500/20 rounded-lg shadow-md p-6">
+    <div className="bg-gray-500/20 rounded-lg shadow-md px-4 py-3">
       <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center">
         <Calculator className="mr-2 text-red-600" size={24} />
         Nuevo Registro
