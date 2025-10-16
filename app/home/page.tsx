@@ -120,8 +120,8 @@ export default function Home() {
       setRegistros(data.data);
       setPaginationInfo(data.pagination);
     } catch (error: any) {
-      console.error("Error al obtener registros:", error?.message || error);
-      notifyError("Hubo un error al cargar los registros.");
+      //console.error("Error al obtener registros:", error?.message || error);
+      //notifyError("Hubo un error al cargar los registros.");
     } finally {
       setIsLoading(false);
     }
@@ -165,8 +165,8 @@ export default function Home() {
         const data = await res.json();
         setModalidades(data);
       } catch (error: any) {
-        console.error("Error al obtener modalidades:", error?.message || error);
-        notifyError("Hubo un error al cargar las modalidades.");
+        //console.error("Error al obtener modalidades:", error?.message || error);
+        //notifyError("Hubo un error al cargar las modalidades.");
       }
     };
 
@@ -181,8 +181,8 @@ export default function Home() {
         const data = await res.json();
         setFeriados(data);
       } catch (error: any) {
-        console.error("Error al obtener feriados:", error?.message || error);
-        notifyError("Hubo un error al cargar los feriados.");
+        //console.error("Error al obtener feriados:", error?.message || error);
+        //notifyError("Hubo un error al cargar los feriados.");
       }
     };
 
