@@ -247,13 +247,15 @@ export default function Home() {
       datos.fechaInicio,
       datos.modalidadId
     );
-
+    console.log(user?.email);
+    
     const payload = {
       titulo: datos.titulo,
       fechaInicio: new Date(datos.fechaInicio).toISOString(),
       fechaGeneracion: new Date().toISOString(),
       modalidadId: datos.modalidadId,
       monto: datos.monto,
+      usuarioCreacion: user?.email || "desconocido",
       fechaPresentacion: new Date(
         fechasCalculadas.fechaPresentacion
       ).toISOString(),

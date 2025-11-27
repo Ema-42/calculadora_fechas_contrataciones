@@ -18,11 +18,13 @@ import { showToast } from "nextjs-toast-notify";
 interface Etapa {
   id: number;
   nombre: string;
+  eliminado?: boolean;
 }
 
 interface Modalidad {
   id: number;
   nombre: string;
+  eliminado?: boolean;
 }
 
 export interface ModalidadEtapa {
@@ -77,6 +79,11 @@ export default function GestionarModalidadesEtapas({
   const [editEtapaId, setEditEtapaId] = useState<number | "">("");
   const [editCantidad, setEditCantidad] = useState<string>("0");
   const [editHabilitado, setEditHabilitado] = useState(true);
+
+  modalidadesEtapas = modalidadesEtapas.filter(
+    (item) =>
+      item?.modalidad?.eliminado !== true && item?.etapa?.eliminado !== true
+  );
 
   const notifySuccess = (msg: string) => {
     showToast.success(msg, {
@@ -192,6 +199,7 @@ export default function GestionarModalidadesEtapas({
   };
 
   const grupos = agruparPorModalidad();
+  console.log(modalidadesEtapas);
 
   return (
     <>

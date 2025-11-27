@@ -161,6 +161,7 @@ export async function POST(req: Request) {
       fechaAdjudicacion,
       fechaPresentacionDocs,
       fechaFirmaContratos,
+      usuarioCreacion,
     } = body;
 
     const nueva = await prisma.contratacion.create({
@@ -175,6 +176,7 @@ export async function POST(req: Request) {
         fechaAdjudicacion,
         fechaPresentacionDocs,
         fechaFirmaContratos,
+        usuarioCreacion,
       },
       include: {
         modalidad: true,
