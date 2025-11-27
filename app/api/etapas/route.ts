@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyToken } from "@/lib/jwt";
 import { parse } from "cookie";
+import { verifyToken } from "@/lib/jwt";
 
 export async function GET(req: Request) {
   try {
@@ -9,7 +9,6 @@ export async function GET(req: Request) {
     const cookies = parse(cookieHeader || "");
     const token = cookies.myToken;
 
-    // Verificar si existe el token
     if (!token) {
       return NextResponse.json(
         { error: "Token no proporcionado" },
@@ -17,22 +16,20 @@ export async function GET(req: Request) {
       );
     }
 
-    // Verificar la validez del token
     const { ok } = verifyToken(token);
     if (!ok) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
     }
 
-    const registros = await (prisma as any).modalidad.findMany({
-      orderBy: { nombre: "asc" },
+    const registros = await (prisma as any).etapas.findMany({
       where: { eliminado: false },
+      orderBy: { nombre: "asc" },
     });
 
     return NextResponse.json(registros);
   } catch (error: any) {
-    console.error("Error en GET /modalidad:", error?.message || error);
+    console.error("Error en GET /etapas:", error?.message || error);
 
-    // Diferentes tipos de errores
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "Error de base de datos" },
@@ -49,7 +46,6 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    // Leer cookie y token
     const cookieHeader = req.headers.get("cookie");
     const cookies = parse(cookieHeader || "");
     const token = cookies.myToken;
@@ -66,48 +62,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
     }
 
-    // Leer body
     const body = await req.json();
-    const { nombre } = body;
+    const { nombre, usuarioModificacion } = body;
 
-    if (!nombre || typeof nombre !== "string") {
+    if (!nombre) {
       return NextResponse.json(
-        { error: "El nombre es obligatorio y debe ser un string" },
+        { error: "El nombre es obligatorio" },
         { status: 400 }
       );
     }
 
-    const nombreNormalizado = nombre.trim();
-
-    if (nombreNormalizado.length === 0) {
-      return NextResponse.json(
-        { error: "El nombre no puede estar vacío" },
-        { status: 400 }
-      );
-    }
-
-    // Validar duplicado
-    const existente = await prisma.modalidad.findFirst({
-      where: { nombre: nombreNormalizado },
-    });
-
-    if (existente) {
-      return NextResponse.json(
-        { error: "Ya existe una modalidad con este nombre" },
-        { status: 400 }
-      );
-    }
-
-    // Crear modalidad
-    const nuevaModalidad = await prisma.modalidad.create({
+    const nuevoRegistro = await (prisma as any).etapas.create({
       data: {
-        nombre: nombreNormalizado,
+        nombre,
+        usuarioModificacion: usuarioModificacion || null,
+        eliminado: false,
       },
     });
 
-    return NextResponse.json(nuevaModalidad, { status: 201 });
+    return NextResponse.json(nuevoRegistro, { status: 201 });
   } catch (error: any) {
-    console.error("Error en POST /modalidades:", error?.message || error);
+    console.error("Error en POST /etapas:", error?.message || error);
+
+    if (error.code === "P2002") {
+      return NextResponse.json(
+        { error: "Error de base de datos" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(
       { error: "Error interno del servidor" },

@@ -36,7 +36,7 @@ export default function Paginacion({ paginaActual, totalPaginas, onCambioPagina 
 
   return (
     <div className="flex items-center justify-between mt-6">
-      <div className="text-sm text-gray-700">
+      <div className="text-sm text-gray-700 dark:text-gray-300">
         Página {paginaActual} de {totalPaginas}
       </div>
 
@@ -44,7 +44,7 @@ export default function Paginacion({ paginaActual, totalPaginas, onCambioPagina 
         <button
           onClick={() => onCambioPagina(paginaActual - 1)}
           disabled={paginaActual === 1}
-          className="p-2 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[hsl(217,26%,18%)] text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[hsl(217,26%,22%)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ChevronLeft size={16} />
         </button>
@@ -55,8 +55,8 @@ export default function Paginacion({ paginaActual, totalPaginas, onCambioPagina 
             onClick={() => onCambioPagina(numero)}
             className={`px-3 py-2 rounded-md text-sm font-medium ${
               numero === paginaActual
-                ? "bg-red-600 text-white"
-                : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                ? "bg-red-600 dark:bg-red-700 text-white animate-pulse"
+                : "bg-white dark:bg-[hsl(217,26%,18%)] text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[hsl(217,26%,22%)]"
             }`}
           >
             {numero}
@@ -66,7 +66,7 @@ export default function Paginacion({ paginaActual, totalPaginas, onCambioPagina 
         <button
           onClick={() => onCambioPagina(paginaActual + 1)}
           disabled={paginaActual === totalPaginas}
-          className="p-2 rounded-md border border-gray-300 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-[hsl(217,26%,18%)] text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[hsl(217,26%,22%)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ChevronRight size={16} />
         </button>

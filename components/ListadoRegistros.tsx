@@ -97,12 +97,12 @@ export default function ListadoRegistros({
     onLimitChange(value);
   };
 
-  return (
-    <div className="bg-white rounded-lg shadow-md py-4 px-6">
+ return (
+    <div className="bg-white dark:bg-[hsl(217,26%,14%)] rounded-lg shadow-md dark:shadow-gray-900/50 py-4 px-6">
       <div className="flex flex-col md:flex-row sm:items-center sm:justify-between mb-4">
         <div className="mb-4 sm:mb-0">
           {paginationInfo && (
-            <p className="text-sm text-gray-500 mt-1 mb-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 mb-1">
               Página {paginationInfo.currentPage} de {paginationInfo.totalPages}
             </p>
           )}
@@ -111,7 +111,7 @@ export default function ListadoRegistros({
         <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
           <div className="relative w-full md:w-80">
             <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
               size={16}
             />
             <input
@@ -120,13 +120,13 @@ export default function ListadoRegistros({
               placeholder="Buscar por título, modalidad o ID"
               value={busqueda}
               onChange={(e) => handleBusquedaChange(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent w-full"
+              className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,18%)] dark:text-gray-200 dark:placeholder-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent w-full"
             />
           </div>
           <select
             value={paginationInfo?.limit || 5}
             onChange={handleLimitChange}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent w-full sm:w-auto"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,18%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent w-full sm:w-auto"
           >
             <option value={5}>Mostrar 5</option>
             <option value={10}>Mostrar 10</option>
@@ -135,7 +135,7 @@ export default function ListadoRegistros({
           </select>{" "}
           <button
             onClick={() => setMostrarModalPDF(true)}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center justify-center w-full sm:w-auto"
+            className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center justify-center w-full sm:w-auto"
           >
             <FileText className="mr-2" size={16} />
             Reporte
@@ -147,7 +147,7 @@ export default function ListadoRegistros({
         <LoadingSpinner mensaje="Cargando registros..." />
       ) : registros.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">
+          <p className="text-gray-500 dark:text-gray-400 text-lg">
             {searchTerm
               ? `No se encontraron registros que coincidan con "${searchTerm}"`
               : "No hay registros aún"}
@@ -155,7 +155,7 @@ export default function ListadoRegistros({
           {searchTerm && (
             <button
               onClick={onClearSearch}
-              className="mt-4 text-sky-600 hover:text-sky-700 underline"
+              className="mt-4 text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 underline"
             >
               Limpiar búsqueda
             </button>
@@ -172,7 +172,7 @@ export default function ListadoRegistros({
                 totalPaginas={paginationInfo.totalPages}
                 onCambioPagina={onPageChange}
               />
-              <div className="text-center mt-4 text-sm text-gray-600">
+              <div className="text-center mt-4 text-sm text-gray-600 dark:text-gray-400">
                 Mostrando{" "}
                 {Math.min(
                   (paginationInfo.currentPage - 1) * paginationInfo.limit + 1,

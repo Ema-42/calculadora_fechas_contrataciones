@@ -8,56 +8,33 @@ import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import GestorFeriados from "@/components/GestorFeriados";
-import { ToastContainer, toast } from "react-toastify";
+
 import axios from "axios";
 import FullScreenLoader from "@/components/FullScreenLoader";
-export interface Registro {
-  id: number;
-  fechaGeneracion: string;
-  titulo: string;
-  fechaInicio: string;
-  modalidad: { id: number; nombre: string };
-  monto: number;
-  fechaPresentacion: string;
-  fechaApertura: string;
-  fechaAdjudicacion: string;
-  fechaPresentacionDocs: string;
-  fechaFirmaContratos: string;
-}
-
-export interface Feriado {
-  id: number;
-  fecha: string;
-  nombre: string;
-}
-
-export interface Modalidad {
-  id: number;
-  nombre: string;
-  presentacion: string;
-  apertura: string;
-  adjudicacion: string;
-  presentacion_docs: string;
-  firma: string;
-}
-
-export interface PaginationInfo {
-  currentPage: number;
-  totalPages: number;
-  totalRegistros: number;
-  limit: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  nextPage: number | null;
-  prevPage: number | null;
-}
+import {
+  Etapa,
+  Feriado,
+  Modalidad,
+  PaginationInfo,
+  Registro,
+} from "../interfaces/interfaces";
+import GestionarEtapas from "@/components/GestionarEtapas";
+import { showToast } from "nextjs-toast-notify";
+import GestionarModalidadesEtapas, {
+  ModalidadEtapa,
+} from "@/components/GestionarModalidadesEtapas";
+import GestionarModalidades from "@/components/GestionarModalidades";
 
 export default function Home() {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [registros, setRegistros] = useState<Registro[]>([]);
   const [feriados, setFeriados] = useState<Feriado[]>([]);
+  const [etapas, setEtapas] = useState<Etapa[]>([]);
   const [modalidades, setModalidades] = useState<Modalidad[]>([]);
+  const [modalidadesEtapas, setModalidadesEtapas] = useState<ModalidadEtapa[]>(
+    []
+  );
   const [paginationInfo, setPaginationInfo] = useState<PaginationInfo | null>(
     null
   );
@@ -79,7 +56,6 @@ export default function Home() {
           router.push("/login");
         }
       } catch (error) {
-        // Si hay error (401 o expirado), redirige al login
         router.push("/login");
       }
     };
@@ -157,62 +133,62 @@ export default function Home() {
     setCurrentPage(1); // Resetear a página 1 cuando cambia el límite
   };
 
-  useEffect(() => {
-    const fetchModalidades = async () => {
-      try {
-        const res = await fetch("/api/modalidades");
-        if (!res.ok) throw new Error("Error al cargar modalidades");
-        const data = await res.json();
-        setModalidades(data);
-      } catch (error: any) {
-        //console.error("Error al obtener modalidades:", error?.message || error);
-        //notifyError("Hubo un error al cargar las modalidades.");
-      }
-    };
+  const fetchModalidades = async () => {
+    try {
+      const res = await fetch("/api/modalidades");
+      if (!res.ok) throw new Error("Error al cargar modalidades");
+      const data = await res.json();
+      setModalidades(data);
+    } catch (error: any) {
+      //console.error("Error al obtener modalidades:", error?.message || error);
+      //notifyError("Hubo un error al cargar las modalidades.");
+    }
+  };
 
-    fetchModalidades();
-  }, []);
+  const fetchFeriados = async () => {
+    try {
+      const res = await fetch("/api/feriados");
+      if (!res.ok) throw new Error("Error al cargar feriados");
+      const data = await res.json();
+      setFeriados(data);
+    } catch (error: any) {
+      //console.error("Error al obtener feriados:", error?.message || error);
+      //notifyError("Hubo un error al cargar los feriados.");
+    }
+  };
 
-  useEffect(() => {
-    const fetchFeriados = async () => {
-      try {
-        const res = await fetch("/api/feriados");
-        if (!res.ok) throw new Error("Error al cargar feriados");
-        const data = await res.json();
-        setFeriados(data);
-      } catch (error: any) {
-        //console.error("Error al obtener feriados:", error?.message || error);
-        //notifyError("Hubo un error al cargar los feriados.");
-      }
-    };
+  const fetchEtapasTest = async () => {
+    try {
+      const res = await fetch("/api/etapas");
+      if (!res.ok) throw new Error(`Error al cargar etapas: ${res.status}`);
+      const data: Etapa[] = await res.json();
+      setEtapas(data); // guarda en la variable de estado
+    } catch (error) {
+      console.error("Error en fetchEtapasTest:", error);
+    }
+  };
 
-    fetchFeriados();
-  }, []);
-
-  const notifyError = (msg: string) =>
-    toast.error(msg, {
+  const notifySuccess = (msg: string) => {
+    showToast.success(msg, {
+      duration: 2000,
+      progress: true,
       position: "top-right",
-      autoClose: 1500,
-      hideProgressBar: false,
-      closeOnClick: false,
-      closeButton: false,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
+      transition: "bounceIn",
+      icon: "",
+      sound: true,
     });
+  };
 
-  const notifySuccess = (msg: string) =>
-    toast.success(msg, {
+  const notifyError = (msg: string) => {
+    showToast.error(msg, {
+      duration: 2000,
+      progress: true,
       position: "top-right",
-      autoClose: 1500,
-      hideProgressBar: false,
-      closeOnClick: false,
-      closeButton: false,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
+      transition: "bounceIn",
+      icon: "",
+      sound: true,
     });
-
+  };
   const esFeriado = (fecha: Date) => {
     const fechaStr = fecha.toISOString().split("T")[0];
     return feriados.some((feriado) => {
@@ -346,6 +322,24 @@ export default function Home() {
     };
   };
 
+  const fetchModalidadesEtapas = async () => {
+    try {
+      const res = await fetch("/api/modalidades-etapas");
+      if (!res.ok)
+        throw new Error(`Error al cargar modalidades-etapas: ${res.status}`);
+      const data: ModalidadEtapa[] = await res.json();
+      setModalidadesEtapas(data); // guarda en la variable de estado
+    } catch (error) {
+      console.error("Error en fetchModalidadesEtapas:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEtapasTest();
+    fetchFeriados();
+    fetchModalidades();
+    fetchModalidadesEtapas();
+  }, []);
   if (loading) {
     return <FullScreenLoader />;
   }
@@ -371,6 +365,35 @@ export default function Home() {
     setFeriados((prev) => [...prev, nuevoFeriado]);
   };
 
+  const editarFeriado = async (
+    id: number,
+    nuevaFecha: string,
+    nuevoNombre: string
+  ) => {
+    try {
+      const res = await fetch(`/api/feriados/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fecha: nuevaFecha, nombre: nuevoNombre }),
+      });
+
+      if (!res.ok) {
+        console.error("Error al editar feriado:", res.statusText);
+        notifyError("Error al editar feriado");
+        return;
+      }
+
+      const feriadoActualizado = await res.json();
+      setFeriados((prev) =>
+        prev.map((f) => (f.id === id ? feriadoActualizado : f))
+      );
+      notifySuccess("¡Feriado editado exitosamente!");
+    } catch (error) {
+      console.error("Error en editarFeriado:", error);
+      notifyError("Error al editar feriado");
+    }
+  };
+
   const eliminarFeriado = async (id: number) => {
     const res = await fetch(`/api/feriados/${id}`, {
       // ← Cambio aquí: agregar /${id}
@@ -387,34 +410,312 @@ export default function Home() {
     setFeriados((prev) => prev.filter((f) => f.id !== id));
   };
 
+  const agregarEtapa = async (nombre: string) => {
+    try {
+      const res = await fetch("/api/etapas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre }),
+      });
+
+      if (!res.ok) {
+        notifyError("Error al agregar etapa");
+        return;
+      }
+
+      notifySuccess("¡Etapa agregada exitosamente!");
+      const nuevaEtapa = await res.json();
+      setEtapas((prev) => [...prev, nuevaEtapa]);
+    } catch (error) {
+      console.error("Error al agregar etapa:", error);
+      notifyError("Error al agregar etapa");
+    }
+  };
+
+  const eliminarEtapa = async (id: number) => {
+    try {
+      const res = await fetch(`/api/etapas/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        console.error("Error al eliminar etapa:", res.statusText);
+        notifyError("Error al eliminar etapa");
+        return;
+      }
+
+      notifySuccess("¡Etapa eliminada exitosamente!");
+      setEtapas((prev) => prev.filter((e) => e.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar etapa:", error);
+      notifyError("Error al eliminar etapa");
+    }
+  };
+
+  const editarEtapa = async (id: number, nombre: string) => {
+    try {
+      const res = await fetch(`/api/etapas/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre }),
+      });
+
+      if (!res.ok) {
+        console.error("Error al editar etapa:", res.statusText);
+        notifyError("Error al editar etapa");
+        return;
+      }
+
+      notifySuccess("¡Etapa editada exitosamente!");
+      const etapaActualizada = await res.json();
+      setEtapas((prev) =>
+        prev.map((e) => (e.id === id ? etapaActualizada : e))
+      );
+    } catch (error) {
+      console.error("Error al editar etapa:", error);
+      notifyError("Error al editar etapa");
+    }
+  };
+
+  const obtenerEtapa = async (id: number): Promise<Etapa | null> => {
+    try {
+      const res = await fetch(`/api/etapas/${id}`);
+      if (!res.ok) {
+        console.error("Error al obtener etapa:", res.statusText);
+        return null;
+      }
+      const data: Etapa = await res.json();
+      return data;
+    } catch (error) {
+      console.error("Error al obtener etapa:", error);
+      return null;
+    }
+  };
+
+  const agregarModalidadEtapa = async (
+    modalidadId: number,
+    etapaId: number,
+    cantidad: string,
+    habilitado: boolean
+  ) => {
+    try {
+      const res = await fetch("/api/modalidades-etapas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          modalidadId,
+          etapaId,
+          cantidad,
+          habilitado,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error al agregar modalidad-etapa:", errorData);
+        notifyError(errorData.error || "Error al agregar modalidad-etapa");
+        return;
+      }
+
+      notifySuccess("¡Modalidad-Etapa agregada exitosamente!");
+      const nuevaModalidadEtapa = await res.json();
+      setModalidadesEtapas((prev) => [...prev, nuevaModalidadEtapa]);
+    } catch (error) {
+      console.error("Error al agregar modalidad-etapa:", error);
+      notifyError("Error al agregar modalidad-etapa");
+    }
+  };
+
+  const eliminarModalidadEtapa = async (id: number) => {
+    try {
+      const res = await fetch(`/api/modalidades-etapas/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error al eliminar modalidad-etapa:", errorData);
+        notifyError(errorData.error || "Error al eliminar modalidad-etapa");
+        return;
+      }
+
+      notifySuccess("¡Modalidad-Etapa eliminada exitosamente!");
+      setModalidadesEtapas((prev) => prev.filter((me) => me.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar modalidad-etapa:", error);
+      notifyError("Error al eliminar modalidad-etapa");
+    }
+  };
+
+  const editarModalidadEtapa = async (
+    id: number,
+    etapaId: number,
+    cantidad: string,
+    habilitado: boolean
+  ) => {
+    try {
+      const res = await fetch(`/api/modalidades-etapas/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          etapaId,
+          cantidad,
+          habilitado,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error al editar modalidad-etapa:", errorData);
+        notifyError(errorData.error || "Error al editar modalidad-etapa");
+        return;
+      }
+
+      notifySuccess("¡Modalidad-Etapa editada exitosamente!");
+      const modalidadEtapaActualizada = await res.json();
+      setModalidadesEtapas((prev) =>
+        prev.map((me) => (me.id === id ? modalidadEtapaActualizada : me))
+      );
+    } catch (error) {
+      console.error("Error al editar modalidad-etapa:", error);
+      notifyError("Error al editar modalidad-etapa");
+    }
+  };
+
+  const agregarModalidad = async (nombre: string) => {
+    try {
+      const res = await fetch("/api/modalidades", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error al agregar modalidad:", errorData);
+        notifyError(errorData.error || "Error al agregar modalidad");
+        return;
+      }
+
+      notifySuccess("¡Modalidad agregada exitosamente!");
+      const nuevaModalidad = await res.json();
+      setModalidades((prev) => [...prev, nuevaModalidad]);
+    } catch (error) {
+      console.error("Error al agregar modalidad:", error);
+      notifyError("Error al agregar modalidad");
+    }
+  };
+
+  const eliminarModalidad = async (id: number) => {
+    try {
+      const res = await fetch(`/api/modalidades/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error al eliminar modalidad:", errorData);
+        notifyError(errorData.error || "Error al eliminar modalidad");
+        return;
+      }
+
+      notifySuccess("¡Modalidad eliminada exitosamente!");
+      setModalidades((prev) => prev.filter((m) => m.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar modalidad:", error);
+      notifyError("Error al eliminar modalidad");
+    }
+  };
+
+  const editarModalidad = async (id: number, nombre: string) => {
+    try {
+      console.log(nombre);
+
+      const res = await fetch(`/api/modalidades/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Error al editar modalidad:", errorData);
+        notifyError(errorData.error || "Error al editar modalidad");
+        return;
+      }
+
+      notifySuccess("¡Modalidad editada exitosamente!");
+      const modalidadActualizada = await res.json();
+      setModalidades((prev) =>
+        prev.map((m) => (m.id === id ? modalidadActualizada : m))
+      );
+    } catch (error) {
+      console.error("Error al editar modalidad:", error);
+      notifyError("Error al editar modalidad");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 dark:bg-[hsl(217,26%,12%)]">
       <Navbar />
-      <main className="container mx-auto px-4 py-6 space-y-4">
-        <GestorFeriados
-          feriados={feriados}
-          onAgregar={agregarFeriado}
-          onEliminar={eliminarFeriado}
-        />
-        <FormularioCalculo
-          onSubmit={agregarRegistro}
-          modalidades={modalidades}
-          loading={isLoadingSaveContratacion}
-        />
-        <ListadoRegistros
-          registros={registros}
-          loading={isLoading}
-          paginationInfo={paginationInfo}
-          onPageChange={handlePageChange}
-          onLimitChange={handleLimitChange}
-          onSearch={handleSearch}
-          onClearSearch={handleClearSearch}
-          searchTerm={searchTerm}
-        />
+      <main className="container mx-auto px-4 py-6 ">
+        <div className="flex flex-wrap items-start">
+          <GestorFeriados
+            feriados={feriados}
+            onAgregar={agregarFeriado}
+            onEditar={editarFeriado}
+            onEliminar={eliminarFeriado}
+          />
+          <GestionarEtapas
+            etapas={etapas}
+            onAgregar={agregarEtapa}
+            onEliminar={eliminarEtapa}
+            onEditar={editarEtapa}
+            obtenerUno={obtenerEtapa}
+          />
+          <GestionarModalidades
+            modalidades={modalidades}
+            onAgregar={agregarModalidad}
+            onEliminar={eliminarModalidad}
+            onEditar={editarModalidad}
+          />
+          <GestionarModalidadesEtapas
+            modalidades={modalidades}
+            etapas={etapas}
+            modalidadesEtapas={modalidadesEtapas}
+            onAgregar={agregarModalidadEtapa}
+            onEliminar={eliminarModalidadEtapa}
+            onEditar={editarModalidadEtapa}
+          />
+        </div>
+
+        <div className="space-y-4">
+          <FormularioCalculo
+            onSubmit={agregarRegistro}
+            modalidades={modalidades}
+            loading={isLoadingSaveContratacion}
+          />
+
+          <div className="space-y-4">
+            <ListadoRegistros
+              registros={registros}
+              loading={isLoading}
+              paginationInfo={paginationInfo}
+              onPageChange={handlePageChange}
+              onLimitChange={handleLimitChange}
+              onSearch={handleSearch}
+              onClearSearch={handleClearSearch}
+              searchTerm={searchTerm}
+            />
+          </div>
+        </div>
       </main>
 
       <Footer />
-      <ToastContainer />
     </div>
   );
 }

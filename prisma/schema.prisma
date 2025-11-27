@@ -8,14 +8,40 @@ datasource db {
 }
 
 model Modalidad {
-  id                Int            @id @default(autoincrement())
-  nombre            String?
-  presentacion      String?
-  apertura          String?
-  adjudicacion      String?
-  presentacion_docs String?
-  firma             String?
-  contrataciones    Contratacion[]
+  id                  Int              @id @default(autoincrement())
+  nombre              String?
+  presentacion        String?
+  apertura            String?
+  adjudicacion        String?
+  presentacion_docs   String?
+  firma               String?
+  usuarioModificacion String?
+  eliminado           Boolean          @default(false)
+  contrataciones      Contratacion[]
+  modalidadEtapas     ModalidadEtapa[]
+}
+
+model Etapas {
+  id                  Int     @id @default(autoincrement())
+  nombre              String?
+  usuarioModificacion String?
+
+  eliminado       Boolean          @default(false)
+  modalidadEtapas ModalidadEtapa[]
+}
+
+model ModalidadEtapa {
+  id         Int     @id @default(autoincrement())
+  etapaId    Int
+  cantidad   String? @default("0")
+  habilitado Boolean @default(true)
+  eliminado  Boolean @default(false)
+
+  usuarioModificacion String?
+
+  modalidadId Int
+  modalidad   Modalidad @relation(fields: [modalidadId], references: [id])
+  etapa       Etapas    @relation(fields: [etapaId], references: [id])
 }
 
 model Contratacion {
@@ -24,19 +50,24 @@ model Contratacion {
   monto                 Float?    @default(0)
   fechaGeneracion       DateTime?
   fechaInicio           DateTime?
-  fechaPresentacion      DateTime?
+  fechaPresentacion     DateTime?
   fechaApertura         DateTime?
   fechaAdjudicacion     DateTime?
   fechaPresentacionDocs DateTime?
   fechaFirmaContratos   DateTime?
+
+  etapas          Json?
+  usuarioCreacion String?
+  eliminado       Boolean @default(false)
 
   modalidadId Int
   modalidad   Modalidad @relation(fields: [modalidadId], references: [id])
 }
 
 model Feriado {
-  id        Int      @id @default(autoincrement())
-  fecha     DateTime @unique
-  nombre    String
-  eliminado Boolean  @default(false)
+  id                  Int      @id @default(autoincrement())
+  fecha               DateTime @unique
+  nombre              String
+  eliminado           Boolean  @default(false)
+  usuarioModificacion String?
 }

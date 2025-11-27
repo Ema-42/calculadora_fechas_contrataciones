@@ -72,25 +72,25 @@ export default function ModalImprimirTodos({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative">
+    <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-[hsl(217,26%,14%)] rounded-lg shadow-xl dark:shadow-gray-900/50 p-6 w-full max-w-md relative">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          className="absolute top-3 right-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
         >
           <X size={20} />
         </button>
-        <h2 className="text-xl font-semibold text-gray-800  flex items-center">
-          <FileText className="mr-2 text-red-600" size={24} />
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center">
+          <FileText className="mr-2 text-red-600 dark:text-red-500" size={24} />
           Generar PDF de Registros
         </h2>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
           Seleccione un rango de fechas para el informe.
         </span>
 
         <div className="space-y-4 mb-6 mt-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Fecha inicial
             </label>
             <Popover>
@@ -98,8 +98,8 @@ export default function ModalImprimirTodos({
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !fechaInicioRango && "text-muted-foreground"
+                    "w-full justify-start text-left font-normal dark:bg-[hsl(217,26%,18%)] dark:border-gray-700 dark:text-gray-200 dark:hover:bg-[hsl(217,26%,22%)]",
+                    !fechaInicioRango && "text-muted-foreground dark:text-gray-500"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -110,7 +110,7 @@ export default function ModalImprimirTodos({
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 dark:bg-[hsl(217,26%,16%)] dark:border-gray-700">
                 <Calendar
                   mode="single"
                   selected={fechaInicioRango}
@@ -123,7 +123,7 @@ export default function ModalImprimirTodos({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Fecha final
             </label>
             <Popover>
@@ -131,8 +131,8 @@ export default function ModalImprimirTodos({
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !fechaFinRango && "text-muted-foreground"
+                    "w-full justify-start text-left font-normal dark:bg-[hsl(217,26%,18%)] dark:border-gray-700 dark:text-gray-200 dark:hover:bg-[hsl(217,26%,22%)]",
+                    !fechaFinRango && "text-muted-foreground dark:text-gray-500"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -143,7 +143,7 @@ export default function ModalImprimirTodos({
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 dark:bg-[hsl(217,26%,16%)] dark:border-gray-700">
                 <Calendar
                   mode="single"
                   selected={fechaFinRango}
@@ -159,14 +159,13 @@ export default function ModalImprimirTodos({
         <div className="flex flex-col sm:flex-row gap-3">
           <Button
             onClick={handleGeneratePDF}
-            className="w-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center"
+            className="w-full bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white flex items-center justify-center"
           >
             <FileText className="mr-2" size={16} />
             Generar PDF
           </Button>
-          {/* Botón "Imprimir PDF" eliminado */}
         </div>
-        <p className="text-center text-sm text-gray-500 mt-2">
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
           *Si no se seleccionan fechas, se generará un PDF con todos los
           registros.
         </p>

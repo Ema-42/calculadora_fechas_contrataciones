@@ -126,18 +126,18 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
   return (
     <div className="grid grid-cols-1 gap-4">
       {registros.length === 0 ? (
-        <div className="col-span-1 text-center py-8 text-gray-500">
+        <div className="col-span-1 text-center py-8 text-gray-500 dark:text-gray-400">
           No hay registros para mostrar.
         </div>
       ) : (
         registros.map((registro) => (
           <div
             key={registro.id}
-            className={`bg-gray-50 rounded-lg shadow-md cursor-pointer transition-all duration-200 ease-in-out 
+            className={`bg-gray-50 dark:bg-[hsl(217,26%,16%)] rounded-lg shadow-md dark:shadow-gray-900/50 cursor-pointer transition-all duration-200 ease-in-out 
               ${
                 filaSeleccionada === registro.id
-                  ? "bg-white border-l-4 border-r-4 border-sky-600"
-                  : "hover:bg-gray-100"
+                  ? "bg-white dark:bg-[hsl(217,26%,18%)] border-l-4 border-r-4 border-sky-600 dark:border-sky-500"
+                  : "hover:bg-gray-100 dark:hover:bg-[hsl(217,26%,18%)]"
               }`}
             onClick={() =>
               setFilaSeleccionada(
@@ -145,93 +145,84 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
               )
             }
           >
-            {/* Sección de Encabezado de la Tarjeta */}
-            <div className="bg-blue-700/10  pt-4 rounded-t-lg mb-1">
+            <div className="bg-blue-700/10 dark:bg-blue-900/20 pt-4 rounded-t-lg mb-1">
               <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-semibold text-gray-700 pl-4">
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 pl-4">
                   ID: #{registro.id}
                 </span>
-                <div className="flex items-center text-sm text-gray-700">
-                  <CalendarClock className="mr-1 text-gray-500" size={14} />
+                <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                  <CalendarClock className="mr-1 text-gray-500 dark:text-gray-400" size={14} />
                   <span className="pr-4">
                     {formatearFecha(registro.fechaGeneracion, true)}
                   </span>
                 </div>
               </div>
 
-              <h3 className="text-lg font-bold text-gray-900 uppercase text-center  ">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase text-center  ">
                 {registro.titulo || "Sin Título"}
               </h3>
               <div className="w-full text-center">
-                 <span className="inline-block text-sm py-1  font-normal bg-blue-700/20 text-blue-950 w-full">
+                 <span className="inline-block text-sm py-1  font-normal bg-blue-700/20 dark:bg-blue-900/30 text-blue-950 dark:text-blue-200 w-full">
                   MODALIDAD: {registro.modalidad.nombre}
                 </span>
               </div>
             </div>
 
-            {/* Sección de Contenido de la Tarjeta */}
             <div className="p-4 pt-2">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700 mb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700 dark:text-gray-300 mb-3">
                 <div className="flex items-center">
-                  <Calendar className="mr-2 text-gray-500" size={16} />
+                  <Calendar className="mr-2 text-gray-500 dark:text-gray-400" size={16} />
                   <p>
-                    <strong className="text-gray-800">Fecha de Inicio:</strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-blue-100 border border-blue-400 text-blue-800 rounded-full text-sm font-semibold">
+                    <strong className="text-gray-800 dark:text-gray-200">Fecha de Inicio:</strong>{" "}
+                    <span className="ml-2 px-3 py-0.5 bg-blue-100 dark:bg-blue-900/40 border border-blue-400 dark:border-blue-700 text-blue-800 dark:text-blue-200 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaInicio)}
                     </span>
                   </p>
                 </div>
                 <div className="flex items-center">
-                  <DollarSign className="mr-2 text-gray-500" size={16} />
+                  <DollarSign className="mr-2 text-gray-500 dark:text-gray-400" size={16} />
                   <p>
-                    <strong className="text-gray-800">Monto:</strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-amber-100 border border-amber-400 text-amber-800 rounded-full text-sm font-semibold">
+                    <strong className="text-gray-800 dark:text-gray-200">Monto:</strong>{" "}
+                    <span className="ml-2 px-3 py-0.5 bg-amber-100 dark:bg-amber-900/40 border border-amber-400 dark:border-amber-700 text-amber-800 dark:text-amber-200 rounded-full text-sm font-semibold">
                       {formatearMonto(registro.monto)} BS.
                     </span>
                   </p>
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 pt-3 mt-3">
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-700">
-                  {/* <li className="flex items-center">
-                    <CalendarCheck className="mr-2 text-gray-500" size={16} />
-                    <strong className="text-gray-800">Presentación:</strong>
-                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
-                      {formatearFechaSimple(registro.fechaPresentacion)}
-                    </span>
-                  </li> */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-700 dark:text-gray-300">
                   <li className="flex items-center">
-                    <CalendarCheck className="mr-2 text-gray-500" size={16} />
-                    <strong className="text-gray-800">Apertura:</strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
+                    <CalendarCheck className="mr-2 text-gray-500 dark:text-gray-400" size={16} />
+                    <strong className="text-gray-800 dark:text-gray-200">Apertura:</strong>{" "}
+                    <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaApertura)}
                     </span>
                   </li>
                   <li className="flex items-center">
-                    <CalendarCheck className="mr-2 text-gray-500" size={16} />
-                    <strong className="text-gray-800">
+                    <CalendarCheck className="mr-2 text-gray-500 dark:text-gray-400" size={16} />
+                    <strong className="text-gray-800 dark:text-gray-200">
                       Adjudicación:
                     </strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaAdjudicacion)}
                     </span>
                   </li>
                   <li className="flex items-center">
-                    <CalendarCheck className="mr-2 text-gray-500" size={16} />
-                    <strong className="text-gray-800">
+                    <CalendarCheck className="mr-2 text-gray-500 dark:text-gray-400" size={16} />
+                    <strong className="text-gray-800 dark:text-gray-200">
                       Presentación Docs:
                     </strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaPresentacionDocs)}
                     </span>
                   </li>
                   <li className="flex items-center">
-                    <CalendarCheck className="mr-2 text-gray-500" size={16} />
-                    <strong className="text-gray-800">
+                    <CalendarCheck className="mr-2 text-gray-500 dark:text-gray-400" size={16} />
+                    <strong className="text-gray-800 dark:text-gray-200">
                       Firma Contrato:
                     </strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-green-100 border border-green-400 text-green-800 rounded-full text-sm font-semibold">
+                    <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
                       {formatearFechaSimple(registro.fechaFirmaContratos)}
                     </span>
                   </li>
@@ -241,7 +232,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
               <div className="mt-4 flex justify-center sm:justify-center  sm:gap-4">
                 <button
                   onClick={(e) => handleDownloadSingle(registro, e)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
+                  className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
                   title="Descargar PDF"
                 >
                   <div className="flex items-center justify-center w-full">
@@ -250,7 +241,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                   </div>
                 </button>
                 <button
-                  className="bg-cyan-600 ml-2 hover:bg-cyan-700 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
+                  className="bg-cyan-600 ml-2 hover:bg-cyan-700 dark:bg-cyan-700 dark:hover:bg-cyan-800 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
                   title="Compartir"
                   onClick={() => handleShare(registro)}
                 >
@@ -260,7 +251,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                   </div>
                 </button>
                 <button
-                  className="bg-slate-600 ml-2 hover:bg-slate-700 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
+                  className="bg-slate-600 ml-2 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-800 text-white px-2 py-2 rounded text-sm font-medium transition-colors flex items-center w-full sm:w-1/4 justify-center sm:justify-start"
                   title="Copiar"
                   onClick={() => handleCopyToClipboard(registro)}
                 >

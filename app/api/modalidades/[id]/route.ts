@@ -12,7 +12,6 @@ export async function DELETE(
     const cookies = parse(cookieHeader || "");
     const token = cookies.myToken;
 
-    // Verificar si existe el token
     if (!token) {
       return NextResponse.json(
         { error: "Token no proporcionado" },
@@ -20,7 +19,6 @@ export async function DELETE(
       );
     }
 
-    // Verificar la validez del token
     const { ok } = verifyToken(token);
     if (!ok) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
@@ -35,7 +33,7 @@ export async function DELETE(
       );
     }
 
-    const feriadoActualizado = await prisma.feriado.update({
+    const modalidadActualizada = await (prisma as any).modalidad.update({
       where: { id },
       data: {
         eliminado: true,
@@ -44,26 +42,18 @@ export async function DELETE(
 
     return NextResponse.json(
       {
-        message: "Feriado eliminado correctamente",
-        feriado: feriadoActualizado,
+        message: "Modalidad eliminada correctamente",
+        modalidad: modalidadActualizada,
       },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error en DELETE /feriados:", error?.message || error);
+    console.error("Error en DELETE /modalidades/:id:", error?.message || error);
 
     if (error.code === "P2025") {
       return NextResponse.json(
-        { error: "El feriado no existe" },
+        { error: "La modalidad no existe" },
         { status: 404 }
-      );
-    }
-
-    // Diferentes tipos de errores
-    if (error.code === "P2002") {
-      return NextResponse.json(
-        { error: "Error de base de datos" },
-        { status: 500 }
       );
     }
 
@@ -104,32 +94,46 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { nombre, fecha } = body;
+    const { nombre } = body;
 
-    const datosActualizacion: any = {};
-    if (typeof nombre !== "undefined") datosActualizacion.nombre = nombre;
-    if (typeof fecha !== "undefined")
-      datosActualizacion.fecha = new Date(fecha);
-
-    if (Object.keys(datosActualizacion).length === 0) {
+    if (!nombre || typeof nombre !== "string") {
       return NextResponse.json(
-        { error: "No hay campos para actualizar" },
+        { error: "El nombre es obligatorio y debe ser un string" },
         { status: 400 }
       );
     }
 
-    const feriadoActualizado = await prisma.feriado.update({
+    // Verificar duplicados (mismo nombre y no eliminado)
+    const existente = await (prisma as any).modalidad.findFirst({
+      where: {
+        nombre: nombre.trim(),
+        eliminado: false,
+        NOT: { id },
+      },
+    });
+    console.log("BODY en el ser: ", req.body);
+
+    if (existente) {
+      return NextResponse.json(
+        { error: "Ya existe otra modalidad con este nombre" },
+        { status: 400 }
+      );
+    }
+
+    const modalidadActualizada = await (prisma as any).modalidad.update({
       where: { id },
-      data: datosActualizacion,
+      data: {
+        nombre: nombre.trim(),
+      },
     });
 
-    return NextResponse.json(feriadoActualizado);
+    return NextResponse.json(modalidadActualizada);
   } catch (error: any) {
-    console.error("Error en PATCH /feriados/:id:", error?.message || error);
+    console.error("Error en PATCH /modalidades/:id:", error?.message || error);
 
     if (error.code === "P2025") {
       return NextResponse.json(
-        { error: "El feriado no existe" },
+        { error: "La modalidad no existe" },
         { status: 404 }
       );
     }

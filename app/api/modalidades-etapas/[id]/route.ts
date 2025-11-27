@@ -12,7 +12,6 @@ export async function DELETE(
     const cookies = parse(cookieHeader || "");
     const token = cookies.myToken;
 
-    // Verificar si existe el token
     if (!token) {
       return NextResponse.json(
         { error: "Token no proporcionado" },
@@ -20,7 +19,6 @@ export async function DELETE(
       );
     }
 
-    // Verificar la validez del token
     const { ok } = verifyToken(token);
     if (!ok) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
@@ -35,7 +33,7 @@ export async function DELETE(
       );
     }
 
-    const feriadoActualizado = await prisma.feriado.update({
+    const modalidadEtapaActualizada = await (prisma as any).modalidadEtapa.update({
       where: { id },
       data: {
         eliminado: true,
@@ -44,26 +42,18 @@ export async function DELETE(
 
     return NextResponse.json(
       {
-        message: "Feriado eliminado correctamente",
-        feriado: feriadoActualizado,
+        message: "Modalidad etapa eliminada correctamente",
+        modalidadEtapa: modalidadEtapaActualizada,
       },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error en DELETE /feriados:", error?.message || error);
+    console.error("Error en DELETE /modalidades-etapas/:id:", error?.message || error);
 
     if (error.code === "P2025") {
       return NextResponse.json(
-        { error: "El feriado no existe" },
+        { error: "La modalidad etapa no existe" },
         { status: 404 }
-      );
-    }
-
-    // Diferentes tipos de errores
-    if (error.code === "P2002") {
-      return NextResponse.json(
-        { error: "Error de base de datos" },
-        { status: 500 }
       );
     }
 
@@ -104,12 +94,16 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { nombre, fecha } = body;
+    const { etapaId, cantidad, modalidadId, usuarioModificacion,habilitado } = body;
 
     const datosActualizacion: any = {};
-    if (typeof nombre !== "undefined") datosActualizacion.nombre = nombre;
-    if (typeof fecha !== "undefined")
-      datosActualizacion.fecha = new Date(fecha);
+    if (typeof etapaId !== "undefined") datosActualizacion.etapaId = etapaId;
+    if (typeof cantidad !== "undefined") datosActualizacion.cantidad = cantidad;
+    if (typeof modalidadId !== "undefined") datosActualizacion.modalidadId = modalidadId;
+    if (typeof usuarioModificacion !== "undefined")
+      datosActualizacion.usuarioModificacion = usuarioModificacion;
+    if (typeof habilitado !== "undefined")
+      datosActualizacion.habilitado = habilitado;
 
     if (Object.keys(datosActualizacion).length === 0) {
       return NextResponse.json(
@@ -118,18 +112,40 @@ export async function PATCH(
       );
     }
 
-    const feriadoActualizado = await prisma.feriado.update({
+    // Validar que no exista otro registro con misma modalidadId y etapaId (eliminado = false)
+    if (etapaId || modalidadId) {
+      const newEtapaId = etapaId || (await (prisma as any).modalidadEtapa.findUnique({ where: { id } })).etapaId;
+      const newModalidadId = modalidadId || (await (prisma as any).modalidadEtapa.findUnique({ where: { id } })).modalidadId;
+
+      const existente = await (prisma as any).modalidadEtapa.findFirst({
+        where: {
+          etapaId: newEtapaId,
+          modalidadId: newModalidadId,
+          eliminado: false,
+          NOT: { id },
+        },
+      });
+
+      if (existente) {
+        return NextResponse.json(
+          { error: "Ya existe un registro con esta modalidad y etapa" },
+          { status: 400 }
+        );
+      }
+    }
+
+    const modalidadEtapaActualizada = await (prisma as any).modalidadEtapa.update({
       where: { id },
       data: datosActualizacion,
     });
 
-    return NextResponse.json(feriadoActualizado);
+    return NextResponse.json(modalidadEtapaActualizada);
   } catch (error: any) {
-    console.error("Error en PATCH /feriados/:id:", error?.message || error);
+    console.error("Error en PATCH /modalidades-etapas/:id:", error?.message || error);
 
     if (error.code === "P2025") {
       return NextResponse.json(
-        { error: "El feriado no existe" },
+        { error: "La modalidad etapa no existe" },
         { status: 404 }
       );
     }

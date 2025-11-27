@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-
+import ThemeToggle from "@/components/ThemeTogle";
 import { auth } from "@/app/firebase/config";
 import { LogOut } from "lucide-react";
 import { signOut } from "firebase/auth";
@@ -73,6 +73,7 @@ export default function Navbar() {
 
           {/* User section */}
           <div className="flex items-center space-x-2 sm:space-x-4">
+            <ThemeToggle />
             <div className="hidden sm:flex items-center gap-2 text-sm relative group">
               {auth.currentUser?.photoURL && (
                 <img
@@ -81,6 +82,7 @@ export default function Navbar() {
                   className="w-8 h-8 lg:w-10 lg:h-10 rounded-full object-cover cursor-pointer ring-2 ring-white/30 hover:ring-white/60 transition-all"
                 />
               )}
+
               <span className="cursor-pointer  transition-colors truncate max-w-32 lg:max-w-none">
                 👋​ Hola,{" "}
                 <span className="px-2 py-1  bg-gray-100/20 rounded-full hover:bg-gray-100/35">

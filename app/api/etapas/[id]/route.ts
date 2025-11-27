@@ -35,7 +35,7 @@ export async function DELETE(
       );
     }
 
-    const feriadoActualizado = await prisma.feriado.update({
+    const etapaActualizada = await (prisma as any).etapas.update({
       where: { id },
       data: {
         eliminado: true,
@@ -44,22 +44,21 @@ export async function DELETE(
 
     return NextResponse.json(
       {
-        message: "Feriado eliminado correctamente",
-        feriado: feriadoActualizado,
+        message: "Etapa eliminada correctamente",
+        etapa: etapaActualizada,
       },
       { status: 200 }
     );
   } catch (error: any) {
-    console.error("Error en DELETE /feriados:", error?.message || error);
+    console.error("Error en DELETE /etapas:", error?.message || error);
 
     if (error.code === "P2025") {
       return NextResponse.json(
-        { error: "El feriado no existe" },
+        { error: "La etapa no existe" },
         { status: 404 }
       );
     }
 
-    // Diferentes tipos de errores
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "Error de base de datos" },
@@ -67,6 +66,54 @@ export async function DELETE(
       );
     }
 
+    return NextResponse.json(
+      { error: "Error interno del servidor" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const cookieHeader = req.headers.get("cookie");
+    const cookies = parse(cookieHeader || "");
+    const token = cookies.myToken;
+
+    if (!token) {
+      return NextResponse.json(
+        { error: "Token no proporcionado" },
+        { status: 401 }
+      );
+    }
+
+    const { ok } = verifyToken(token);
+    if (!ok) {
+      return NextResponse.json({ error: "Token inválido" }, { status: 401 });
+    }
+
+    const id = parseInt(params.id, 10);
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: "El ID debe ser un número válido" },
+        { status: 400 }
+      );
+    }
+
+    const etapa = await (prisma as any).etapas.findUnique({ where: { id } });
+
+    if (!etapa || etapa.eliminado) {
+      return NextResponse.json(
+        { error: "Etapa no encontrada" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(etapa);
+  } catch (error: any) {
+    console.error("Error en GET /etapas/:id:", error?.message || error);
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -104,12 +151,14 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const { nombre, fecha } = body;
+    const { nombre, usuarioModificacion, eliminado } = body;
 
     const datosActualizacion: any = {};
     if (typeof nombre !== "undefined") datosActualizacion.nombre = nombre;
-    if (typeof fecha !== "undefined")
-      datosActualizacion.fecha = new Date(fecha);
+    if (typeof usuarioModificacion !== "undefined")
+      datosActualizacion.usuarioModificacion = usuarioModificacion;
+    if (typeof eliminado !== "undefined")
+      datosActualizacion.eliminado = eliminado;
 
     if (Object.keys(datosActualizacion).length === 0) {
       return NextResponse.json(
@@ -118,18 +167,18 @@ export async function PATCH(
       );
     }
 
-    const feriadoActualizado = await prisma.feriado.update({
+    const etapaActualizada = await (prisma as any).etapas.update({
       where: { id },
       data: datosActualizacion,
     });
 
-    return NextResponse.json(feriadoActualizado);
+    return NextResponse.json(etapaActualizada);
   } catch (error: any) {
-    console.error("Error en PATCH /feriados/:id:", error?.message || error);
+    console.error("Error en PATCH /etapas/:id:", error?.message || error);
 
     if (error.code === "P2025") {
       return NextResponse.json(
-        { error: "El feriado no existe" },
+        { error: "La etapa no existe" },
         { status: 404 }
       );
     }
