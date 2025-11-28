@@ -22,7 +22,15 @@ export async function GET(req: Request) {
     }
 
     const registros = await (prisma as any).modalidadEtapa.findMany({
-      where: { eliminado: false },
+      where: {
+        eliminado: false,
+        modalidad: {
+          eliminado: false,
+        },
+        etapa: {
+          eliminado: false,
+        },
+      },
       include: {
         modalidad: true,
         etapa: true,
@@ -67,7 +75,8 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { etapaId, modalidadId, cantidad,habilitado, usuarioModificacion } = body;
+    const { etapaId, modalidadId, cantidad, habilitado, usuarioModificacion } =
+      body;
 
     if (!etapaId || !modalidadId) {
       return NextResponse.json(
@@ -93,7 +102,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json(nuevoRegistro, { status: 201 });
   } catch (error: any) {
-    console.error("Error en POST /modalidades-etapas:", error?.message || error);
+    console.error(
+      "Error en POST /modalidades-etapas:",
+      error?.message || error
+    );
 
     if (error.code === "P2002") {
       return NextResponse.json(

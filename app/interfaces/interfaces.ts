@@ -16,6 +16,8 @@ export interface Registro {
   fechaAdjudicacion: string;
   fechaPresentacionDocs: string;
   fechaFirmaContratos: string;
+  usuarioCreacion: string;
+  etapas: Record<string, string>;
 }
 
 export interface Etapa {
@@ -24,7 +26,6 @@ export interface Etapa {
   usuarioModificacion?: string | null;
   eliminado?: boolean;
 }
- 
 
 export interface Modalidad {
   id: number;

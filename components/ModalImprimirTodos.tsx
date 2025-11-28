@@ -81,7 +81,7 @@ export default function ModalImprimirTodos({
           <X size={20} />
         </button>
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center">
-          <FileText className="mr-2 text-red-600 dark:text-red-500" size={24} />
+          <FileText className="mr-2 text-blue-600 dark:text-blue-500" size={24} />
           Generar PDF de Registros
         </h2>
         <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -159,7 +159,7 @@ export default function ModalImprimirTodos({
         <div className="flex flex-col sm:flex-row gap-3">
           <Button
             onClick={handleGeneratePDF}
-            className="w-full bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white flex items-center justify-center"
+            className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-800 dark:hover:bg-blue-900 text-white flex items-center justify-center"
           >
             <FileText className="mr-2" size={16} />
             Generar PDF

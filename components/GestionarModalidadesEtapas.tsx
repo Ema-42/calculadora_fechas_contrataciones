@@ -80,10 +80,10 @@ export default function GestionarModalidadesEtapas({
   const [editCantidad, setEditCantidad] = useState<string>("0");
   const [editHabilitado, setEditHabilitado] = useState(true);
 
-  modalidadesEtapas = modalidadesEtapas.filter(
+  /*   modalidadesEtapas = modalidadesEtapas.filter(
     (item) =>
       item?.modalidad?.eliminado !== true && item?.etapa?.eliminado !== true
-  );
+  ); */
 
   const notifySuccess = (msg: string) => {
     showToast.success(msg, {
@@ -199,11 +199,10 @@ export default function GestionarModalidadesEtapas({
   };
 
   const grupos = agruparPorModalidad();
-  console.log(modalidadesEtapas);
 
   return (
     <>
-      <div className="w-full md:w-2/5 pb-4 md:pr-2">
+      <div className="w-full md:w-2/5 pb-4 ">
         <button
           onClick={() => setModalAbierto(true)}
           className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center shadow-md dark:shadow-gray-900/50"
@@ -222,10 +221,6 @@ export default function GestionarModalidadesEtapas({
                   <Settings className="mr-2 text-white" size={24} />
                   Gestionar Modalidades-Etapas
                 </h2>
-                <h4 className="mt-1 text-xs text-gray-200 dark:text-gray-300">
-                  En esta sección puedes agregar, ver, editar y eliminar las
-                  relaciones entre modalidades y etapas.
-                </h4>
               </div>
               <button
                 onClick={() => setModalAbierto(false)}
@@ -238,7 +233,7 @@ export default function GestionarModalidadesEtapas({
             <div className="px-6 pb-6 pt-6 overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Columna izquierda: Formulario */}
               <div className="flex flex-col gap-4 md:col-span-1">
-                <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-3 md:p-4 rounded-lg">
+                {/* <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-3 md:p-4 rounded-lg">
                   <div className="flex items-center space-x-3 mb-2">
                     <Info className="h-4 w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                     <h4 className="text-xs font-bold md:text-sm text-emerald-800 dark:text-emerald-300">
@@ -250,7 +245,7 @@ export default function GestionarModalidadesEtapas({
                     cantidad y estado.
                   </p>
                 </div>
-
+ */}
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
@@ -294,69 +289,71 @@ export default function GestionarModalidadesEtapas({
                     </select>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                      Duración (en días)
-                    </label>
-                    <input
-                      type="number"
-                      value={nuevaCantidad}
-                      onChange={(e) => setNuevaCantidad(e.target.value)}
-                      placeholder="0"
-                      className="w-full h-[42px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2">
-                      Estado
-                    </label>
-                    <div className="flex gap-4">
-                      <label
-                        htmlFor="habilitado"
-                        className={`flex-1 rounded border p-2 text-sm font-medium shadow-sm transition-all cursor-pointer ${
-                          nuevoHabilitado === true
-                            ? "border-green-600 bg-green-50  ring-green-600 dark:bg-green-900 dark:border-green-500 dark:ring-green-500"
-                            : "border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
-                        }`}
-                      >
-                        <div className="flex items-center justify-center">
-                          <span className="text-gray-700 dark:text-gray-200">
-                            Habilitado
-                          </span>
-                        </div>
-                        <input
-                          id="habilitado"
-                          type="radio"
-                          name="estado"
-                          checked={nuevoHabilitado === true}
-                          onChange={() => setNuevoHabilitado(true)}
-                          className="sr-only"
-                        />
+                  <div className="grid grid-cols-5 md:grid-cols-1 gap-4">
+                    <div className="col-span-2 md:col-span-1">
+                      <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
+                        Duración (en días)
                       </label>
+                      <input
+                        type="number"
+                        value={nuevaCantidad}
+                        onChange={(e) => setNuevaCantidad(e.target.value)}
+                        placeholder="0"
+                        className="w-full h-[42px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
 
-                      <label
-                        htmlFor="deshabilitado"
-                        className={`flex-1 rounded border p-2 text-sm font-medium shadow-sm transition-all cursor-pointer ${
-                          nuevoHabilitado === false
-                            ? "border-red-600 bg-red-50   ring-red-600 dark:bg-red-900 dark:border-red-500 dark:ring-red-500"
-                            : "border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
-                        }`}
-                      >
-                        <div className="flex items-center justify-center">
-                          <span className="text-gray-700 dark:text-gray-200">
-                            Deshabilitado
-                          </span>
-                        </div>
-                        <input
-                          id="deshabilitado"
-                          type="radio"
-                          name="estado"
-                          checked={nuevoHabilitado === false}
-                          onChange={() => setNuevoHabilitado(false)}
-                          className="sr-only"
-                        />
+                    <div className="col-span-3 md:col-span-1">
+                      <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1 md:mb-2">
+                        Estado
                       </label>
+                      <div className="flex gap-2 md:gap-4">
+                        <label
+                          htmlFor="habilitado"
+                          className={`flex-1 rounded border p-2 text-sm font-medium shadow-sm transition-all cursor-pointer ${
+                            nuevoHabilitado === true
+                              ? "border-blue-600 bg-blue-50  ring-blue-600 dark:bg-blue-900 dark:border-blue-500 dark:ring-blue-500"
+                              : "border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+                          }`}
+                        >
+                          <div className="flex items-center justify-center">
+                            <span className="text-gray-700 dark:text-gray-200">
+                              Habilitado
+                            </span>
+                          </div>
+                          <input
+                            id="habilitado"
+                            type="radio"
+                            name="estado"
+                            checked={nuevoHabilitado === true}
+                            onChange={() => setNuevoHabilitado(true)}
+                            className="sr-only"
+                          />
+                        </label>
+
+                        <label
+                          htmlFor="deshabilitado"
+                          className={`flex-1 rounded border p-2 text-sm font-medium shadow-sm transition-all cursor-pointer ${
+                            nuevoHabilitado === false
+                              ? "border-red-600 bg-red-50   ring-red-600 dark:bg-red-900 dark:border-red-500 dark:ring-red-500"
+                              : "border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
+                          }`}
+                        >
+                          <div className="flex items-center justify-center">
+                            <span className="text-gray-700 dark:text-gray-200">
+                              Deshabilitado
+                            </span>
+                          </div>
+                          <input
+                            id="deshabilitado"
+                            type="radio"
+                            name="estado"
+                            checked={nuevoHabilitado === false}
+                            onChange={() => setNuevoHabilitado(false)}
+                            className="sr-only"
+                          />
+                        </label>
+                      </div>
                     </div>
                   </div>
 
@@ -398,51 +395,53 @@ export default function GestionarModalidadesEtapas({
                                   <div className="flex-1 min-w-0">
                                     {editId === item.id ? (
                                       <div className="space-y-2">
-                                        <div>
-                                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Etapa
-                                          </label>
-                                          <select
-                                            value={editEtapaId}
-                                            onChange={(e) =>
-                                              setEditEtapaId(
-                                                Number(e.target.value)
-                                              )
-                                            }
-                                            className="w-full h-[38px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                                          >
-                                            <option value="">
-                                              Seleccionar etapa
-                                            </option>
-                                            {etapas.map((etapa) => (
-                                              <option
-                                                key={etapa.id}
-                                                value={etapa.id}
-                                              >
-                                                {etapa.nombre}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                          <div>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                              Etapa
+                                            </label>
+                                            <select
+                                              value={editEtapaId}
+                                              onChange={(e) =>
+                                                setEditEtapaId(
+                                                  Number(e.target.value)
+                                                )
+                                              }
+                                              className="w-full h-[38px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                            >
+                                              <option value="">
+                                                Seleccionar etapa
                                               </option>
-                                            ))}
-                                          </select>
-                                        </div>
-                                        <div>
-                                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Duración (en días)
-                                          </label>
-                                          <input
-                                            type="number"
-                                            value={editCantidad}
-                                            onChange={(e) =>
-                                              setEditCantidad(e.target.value)
-                                            }
-                                            className="w-full h-[38px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                                          />
+                                              {etapas.map((etapa) => (
+                                                <option
+                                                  key={etapa.id}
+                                                  value={etapa.id}
+                                                >
+                                                  {etapa.nombre}
+                                                </option>
+                                              ))}
+                                            </select>
+                                          </div>
+                                          <div>
+                                            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                              Duración (en días)
+                                            </label>
+                                            <input
+                                              type="number"
+                                              value={editCantidad}
+                                              onChange={(e) =>
+                                                setEditCantidad(e.target.value)
+                                              }
+                                              className="w-full h-[38px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                            />
+                                          </div>
                                         </div>
                                         <div className="flex gap-4">
                                           <label
                                             htmlFor="edit_habilitado"
                                             className={`flex-1 rounded border p-1 text-sm font-medium shadow-sm transition-all cursor-pointer ${
                                               editHabilitado === true
-                                                ? "border-green-600 bg-green-50 ring-green-600 dark:bg-green-900 dark:border-green-500 dark:ring-green-500"
+                                                ? "border-blue-600 bg-blue-50 ring-blue-600 dark:bg-blue-900 dark:border-blue-500 dark:ring-blue-500"
                                                 : "border-gray-300 bg-white hover:bg-gray-50 hover:border-gray-400 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700"
                                             }`}
                                           >
@@ -493,7 +492,7 @@ export default function GestionarModalidadesEtapas({
                                       <>
                                         <p className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
                                           {getNombreEtapa(item.etapaId)} →
-                                          <span className="rounded-full bg-green-600/50 px-2 py-0.5 text-sm whitespace-nowrap text-green-200">
+                                          <span className="rounded-full bg-green-600/30 px-2 py-0.5 text-sm whitespace-nowrap text-green-900 dark:text-green-200">
                                             {item.cantidad || "0"} Días
                                           </span>
                                         </p>

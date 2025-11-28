@@ -1,26 +1,14 @@
 "use client";
 
 import type React from "react";
-import { useState, useMemo, useEffect } from "react";
+import { useState,useEffect } from "react";
 import { Search, FileText } from "lucide-react";
 import TablaRegistros from "./TablaRegistros";
 import Paginacion from "./Paginacion";
 import ModalImprimirTodos from "./ModalImprimirTodos";
 import LoadingSpinner from "./LoadingSpinner";
+import { Registro } from "@/app/interfaces/interfaces";
 
-interface Registro {
-  id: number;
-  fechaGeneracion: string;
-  titulo: string;
-  fechaInicio: string;
-  modalidad: { id: number; nombre: string };
-  monto: number;
-  fechaPresentacion: string;
-  fechaApertura: string;
-  fechaAdjudicacion: string;
-  fechaPresentacionDocs: string;
-  fechaFirmaContratos: string;
-}
 
 interface PaginationInfo {
   currentPage: number;
@@ -97,7 +85,7 @@ export default function ListadoRegistros({
     onLimitChange(value);
   };
 
- return (
+  return (
     <div className="bg-white dark:bg-[hsl(217,26%,14%)] rounded-lg shadow-md dark:shadow-gray-900/50 py-4 px-6">
       <div className="flex flex-col md:flex-row sm:items-center sm:justify-between mb-4">
         <div className="mb-4 sm:mb-0">
@@ -135,7 +123,7 @@ export default function ListadoRegistros({
           </select>{" "}
           <button
             onClick={() => setMostrarModalPDF(true)}
-            className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center justify-center w-full sm:w-auto"
+            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-800 dark:hover:bg-blue-900 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center justify-center w-full sm:w-auto"
           >
             <FileText className="mr-2" size={16} />
             Reporte

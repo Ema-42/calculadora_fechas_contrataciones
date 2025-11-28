@@ -10,24 +10,10 @@ import {
   DollarSign,
   Share2,
   Copy,
-} from "lucide-react"; // Importar Download
+} from "lucide-react";
 import { useState } from "react";
-import { generateSingleRecordPdf } from "@/lib/pdf-utils"; // Importar la utilidad de PDF
-
-interface Registro {
-  id: number;
-  fechaGeneracion: string;
-  titulo: string;
-  fechaInicio: string;
-  modalidad: { id: number; nombre: string };
-  monto: number;
-  fechaPresentacion: string;
-  fechaApertura: string;
-  fechaAdjudicacion: string;
-  fechaPresentacionDocs: string;
-  fechaFirmaContratos: string;
-  usuarioCreacion: string;
-}
+import { generateSingleRecordPdf } from "@/lib/pdf-utils";
+import { Registro } from "@/app/interfaces/interfaces";
 
 interface TablaRegistrosProps {
   registros: Registro[];
@@ -53,7 +39,6 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
   };
 
   const formatearFechaSimple = (fecha: string) => {
-    // Eliminar la "Z" para evitar conversión de zona horaria
     const fechaSinZ = fecha.replace(/Z$/, "");
     const fechaObj = new Date(fechaSinZ);
     return fechaObj.toLocaleDateString("es-BO", {
@@ -80,23 +65,26 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
   };
 
   const formatearRegistroComoTexto = (registro: any): string => {
-    const formatoFecha = (fecha: string) =>
-      new Date(fecha).toISOString().split("T")[0];
-
-    return `
+    let texto = `
 📄 *Título:* ${registro.titulo}
 💰 *Monto:* Bs. ${registro.monto.toFixed(2)}
 📅 *Fecha de generación:* ${formatearFecha(registro.fechaGeneracion, true)}
 🛠️ *Modalidad:* ${registro.modalidad?.nombre || "N/A"}
 
 📌 *Fechas importantes:*
-📂 Apertura: ${formatearFechaSimple(registro.fechaApertura)}
-🏆 Adjudicación: ${formatearFechaSimple(registro.fechaAdjudicacion)}
-📑 Presentación de documentos: ${formatearFechaSimple(
-      registro.fechaPresentacionDocs
-    )}
-✍️ Firma de contratos: ${formatearFechaSimple(registro.fechaFirmaContratos)}
-`.trim();
+📅 Fecha de Inicio: ${formatearFechaSimple(registro.fechaInicio)}
+`;
+
+    // Agregar dinámicamente las etapas que existan
+    if (registro.etapas && Object.keys(registro.etapas).length > 0) {
+      Object.entries(registro.etapas).forEach(([nombreEtapa, fecha]) => {
+        texto += `📍 ${nombreEtapa}: ${formatearFechaSimple(
+          fecha as string
+        )}\n`;
+      });
+    }
+
+    return texto.trim();
   };
 
   const handleCopyToClipboard = async (data: object) => {
@@ -104,7 +92,7 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
       const texto = formatearRegistroComoTexto(data);
       await navigator.clipboard.writeText(texto);
       setCopiada(true);
-      setTimeout(() => setCopiada(false), 3000); // Resetear después de
+      setTimeout(() => setCopiada(false), 3000);
     } catch (error) {
       console.error("Error al copiar al portapapeles:", error);
     }
@@ -161,7 +149,11 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                   </span>
                 </div>
               </div>
-
+              <div className="flex justify-center md:justify-end">
+                <span className=" md:mr-3 px-3 py-0.5 bg-blue-100 dark:bg-blue-900/40 border border-blue-400 dark:border-blue-700 text-blue-800 dark:text-blue-200 rounded-full text-sm inline-flex items-center">
+                  {registro?.usuarioCreacion || "Desconocido"}
+                </span>
+              </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 uppercase text-center  ">
                 {registro.titulo || "Sin Título"}
               </h3>
@@ -169,10 +161,6 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                 <div className="flex items-center justify-between w-full bg-blue-700/20 dark:bg-blue-900/30 text-blue-950 dark:text-blue-200">
                   <span className="flex-1 text-center text-sm py-1 font-normal ">
                     MODALIDAD: {registro.modalidad.nombre}
-                  </span>
-
-                  <span className="  px-3 h-full flex items-center justify-center py-0.5 bg-blue-100 dark:bg-blue-900/40 border border-blue-400 dark:border-blue-700 text-blue-800 dark:text-blue-200 rounded-full text-sm ">
-                    {registro?.usuarioCreacion || "Desconocido"}
                   </span>
                 </div>
               </div>
@@ -210,58 +198,29 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
                 </div>
               </div>
 
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-700 dark:text-gray-300">
-                  <li className="flex items-center">
-                    <CalendarCheck
-                      className="mr-2 text-gray-500 dark:text-gray-400"
-                      size={16}
-                    />
-                    <strong className="text-gray-800 dark:text-gray-200">
-                      Apertura:
-                    </strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
-                      {formatearFechaSimple(registro.fechaApertura)}
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <CalendarCheck
-                      className="mr-2 text-gray-500 dark:text-gray-400"
-                      size={16}
-                    />
-                    <strong className="text-gray-800 dark:text-gray-200">
-                      Adjudicación:
-                    </strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
-                      {formatearFechaSimple(registro.fechaAdjudicacion)}
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <CalendarCheck
-                      className="mr-2 text-gray-500 dark:text-gray-400"
-                      size={16}
-                    />
-                    <strong className="text-gray-800 dark:text-gray-200">
-                      Presentación Docs:
-                    </strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
-                      {formatearFechaSimple(registro.fechaPresentacionDocs)}
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <CalendarCheck
-                      className="mr-2 text-gray-500 dark:text-gray-400"
-                      size={16}
-                    />
-                    <strong className="text-gray-800 dark:text-gray-200">
-                      Firma Contrato:
-                    </strong>{" "}
-                    <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
-                      {formatearFechaSimple(registro.fechaFirmaContratos)}
-                    </span>
-                  </li>
-                </ul>
-              </div>
+              {/* Renderizado dinámico de etapas */}
+              {registro.etapas && Object.keys(registro.etapas).length > 0 && (
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
+                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-700 dark:text-gray-300">
+                    {Object.entries(registro.etapas).map(
+                      ([nombreEtapa, fecha]) => (
+                        <li key={nombreEtapa} className="flex items-center">
+                          <CalendarCheck
+                            className="mr-2 text-gray-500 dark:text-gray-400"
+                            size={16}
+                          />
+                          <strong className="text-gray-800 dark:text-gray-200">
+                            {nombreEtapa}:
+                          </strong>{" "}
+                          <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
+                            {formatearFechaSimple(fecha as string)}
+                          </span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
 
               <div className="mt-4 flex justify-center sm:justify-center  sm:gap-4">
                 <button

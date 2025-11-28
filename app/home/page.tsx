@@ -242,13 +242,28 @@ export default function Home() {
     modalidadId: any;
     saving?: boolean;
   }) => {
+    console.log("DATA", datos);
+    console.log("Modalidades Etapas", modalidadesEtapas);
+
+    // Filtra modalidadesEtapas por el modalidadId de datos
+    const modalidadesEtapaFiltrado = modalidadesEtapas.filter(
+      (me) => me.modalidad?.id === datos.modalidadId
+    );
+
+    console.log("Modalidades Etapa Filtrado", modalidadesEtapaFiltrado);
     setIsLoadingSaveContratacion(true);
     const fechasCalculadas = calcularFechas(
       datos.fechaInicio,
       datos.modalidadId
     );
-    console.log(user?.email);
-    
+
+    const fechasCalculadas2 = calcularFechas2(
+      datos.fechaInicio,
+      modalidadesEtapaFiltrado
+    );
+
+    console.log("Fechas Calculadas", fechasCalculadas2);
+
     const payload = {
       titulo: datos.titulo,
       fechaInicio: new Date(datos.fechaInicio).toISOString(),
@@ -256,6 +271,7 @@ export default function Home() {
       modalidadId: datos.modalidadId,
       monto: datos.monto,
       usuarioCreacion: user?.email || "desconocido",
+      etapas: fechasCalculadas2,
       fechaPresentacion: new Date(
         fechasCalculadas.fechaPresentacion
       ).toISOString(),
@@ -322,6 +338,30 @@ export default function Home() {
       ),
       fechaFirmaContratos: agregarDiasHabiles(fecha, config.firma),
     };
+  };
+
+  interface FechasCalculadas {
+    [nombreEtapa: string]: string; // Cambiar a string si agregarDiasHabiles retorna string
+  }
+
+  const calcularFechas2 = (
+    fechaInicio: string,
+    modalidadesEtapaFiltrado: ModalidadEtapa[]
+  ): Record<string, string> => {
+    const fecha = parseFechaLocal(fechaInicio);
+    const fechasCalculadas: Record<string, string> = {};
+
+    modalidadesEtapaFiltrado.forEach((me) => {
+      if (me.etapa && me.etapa.nombre) {
+        const fechaCalculada = agregarDiasHabiles(fecha, Number(me.cantidad));
+        // Convertir a ISO string con Z
+        fechasCalculadas[me.etapa.nombre] = new Date(
+          fechaCalculada
+        ).toISOString();
+      }
+    });
+
+    return fechasCalculadas;
   };
 
   const fetchModalidadesEtapas = async () => {
@@ -445,7 +485,7 @@ export default function Home() {
         notifyError("Error al eliminar etapa");
         return;
       }
-
+      fetchModalidadesEtapas();
       notifySuccess("¡Etapa eliminada exitosamente!");
       setEtapas((prev) => prev.filter((e) => e.id !== id));
     } catch (error) {
@@ -467,7 +507,7 @@ export default function Home() {
         notifyError("Error al editar etapa");
         return;
       }
-
+      fetchModalidadesEtapas();
       notifySuccess("¡Etapa editada exitosamente!");
       const etapaActualizada = await res.json();
       setEtapas((prev) =>
@@ -622,7 +662,7 @@ export default function Home() {
         notifyError(errorData.error || "Error al eliminar modalidad");
         return;
       }
-
+      fetchModalidadesEtapas();
       notifySuccess("¡Modalidad eliminada exitosamente!");
       setModalidades((prev) => prev.filter((m) => m.id !== id));
     } catch (error) {
@@ -649,7 +689,7 @@ export default function Home() {
         notifyError(errorData.error || "Error al editar modalidad");
         return;
       }
-
+      fetchModalidadesEtapas();
       notifySuccess("¡Modalidad editada exitosamente!");
       const modalidadActualizada = await res.json();
       setModalidades((prev) =>
