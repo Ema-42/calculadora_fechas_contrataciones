@@ -202,12 +202,12 @@ export default function GestionarModalidadesEtapas({
 
   return (
     <>
-      <div className="w-full md:w-2/5 pb-4 ">
+      <div className="w-full pr-2  md:w-2/5 pb-4 ">
         <button
           onClick={() => setModalAbierto(true)}
-          className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center shadow-md dark:shadow-gray-900/50"
+          className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-1 py-2 rounded-lg font-medium transition-colors flex items-center justify-center shadow-md dark:shadow-gray-900/50"
         >
-          <Settings className="mr-2" size={20} />
+          <Settings className="mr-2 hidden md:block" size={20} />
           AJUSTES ETAPAS-MODALIDADES
         </button>
       </div>
@@ -359,7 +359,7 @@ export default function GestionarModalidadesEtapas({
 
                   <button
                     type="submit"
-                    className="w-full h-[42px] bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-4 rounded-md font-medium transition-colors flex items-center justify-center"
+                    className="w-w-1/2 h-[42px] bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-4 rounded-md font-medium transition-colors flex items-center justify-center"
                   >
                     <Plus className="mr-2" size={16} />
                     Agregar Relación
@@ -369,10 +369,6 @@ export default function GestionarModalidadesEtapas({
 
               {/* Columna derecha: Lista agrupada por modalidad */}
               <div className="flex flex-col gap-4 min-h-0 md:col-span-2">
-                <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex-shrink-0">
-                  Relaciones ({modalidadesEtapas.length})
-                </h3>
-
                 <div className="overflow-y-auto flex-1 min-h-0">
                   {Object.keys(grupos).length === 0 ? (
                     <p className="text-gray-800 dark:text-gray-300 text-center py-4">

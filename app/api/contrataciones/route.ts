@@ -92,7 +92,7 @@ export async function GET(request: Request) {
     const totalPages = Math.ceil(totalRegistros / limit);
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
-    
+
     const response = {
       data: registros,
       pagination: {
@@ -107,7 +107,7 @@ export async function GET(request: Request) {
       },
       search: search.trim(), // Incluir término de búsqueda en la respuesta
     };
-    
+
     //console.log("Total registros:", response);
 
     return NextResponse.json(response);
@@ -152,15 +152,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     const {
       titulo,
-      fechaInicio,
       fechaGeneracion,
+      fechaInicio,
       modalidadId,
       monto = 0,
-      fechaPresentacion,
-      fechaApertura,
-      fechaAdjudicacion,
-      fechaPresentacionDocs,
-      fechaFirmaContratos,
       usuarioCreacion,
       etapas,
     } = body;
@@ -168,17 +163,12 @@ export async function POST(req: Request) {
     const nueva = await prisma.contratacion.create({
       data: {
         titulo,
-        fechaInicio,
         fechaGeneracion,
+        fechaInicio,
         modalidadId,
         monto,
-        fechaPresentacion,
-        fechaApertura,
-        fechaAdjudicacion,
-        fechaPresentacionDocs,
-        fechaFirmaContratos,
         usuarioCreacion,
-        etapas
+        etapas,
       },
       include: {
         modalidad: true,

@@ -11,11 +11,6 @@ export interface Registro {
   fechaInicio: string;
   modalidad: { id: number; nombre: string };
   monto: number;
-  fechaPresentacion: string;
-  fechaApertura: string;
-  fechaAdjudicacion: string;
-  fechaPresentacionDocs: string;
-  fechaFirmaContratos: string;
   usuarioCreacion: string;
   etapas: Record<string, string>;
 }

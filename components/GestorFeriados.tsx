@@ -197,13 +197,13 @@ export default function GestorFeriados({
 
   return (
     <>
-      <div className="w-full md:w-1/5 pb-4 md:pr-2">
+      <div className="w-1/3 pr-2 md:w-1/5 pb-4 md:pr-2">
         <button
           onClick={() => setModalAbierto(true)}
-          className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center shadow-md dark:shadow-gray-900/50"
+          className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-1 py-2 rounded-lg font-medium transition-colors flex items-center justify-center shadow-md dark:shadow-gray-900/50"
         >
-          <Calendar className="mr-2" size={20} />
-            FERIADOS
+          <Calendar className="mr-2 hidden md:block" size={20} />
+          FERIADOS
         </button>
       </div>
 
@@ -216,10 +216,6 @@ export default function GestorFeriados({
                   <Calendar className="mr-2 text-white" size={24} />
                   Gestionar Feriados
                 </h2>
-                <h4 className="mt-1 text-xs text-gray-200 dark:text-gray-300">
-                  En esta sección puedes agregar, ver y eliminar los feriados de
-                  la gestión.
-                </h4>
               </div>
               <button
                 onClick={() => setModalAbierto(false)}
@@ -233,17 +229,14 @@ export default function GestorFeriados({
               {/* Columna izquierda: Formulario e info */}
               <div className="flex flex-col gap-4 md:col-span-1">
                 <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-3 md:p-4 rounded-lg">
-                  <div className="flex items-center space-x-3 mb-2">
+                  <div className="flex items-center space-x-3 ">
                     <Info className="h-4 w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                    <h4 className="text-xs font-bold md:text-sm text-emerald-800 dark:text-emerald-300">
-                      Feriados del {new Date().getFullYear()}
-                    </h4>
+                    <p className="text-xs md:text-sm text-emerald-700 dark:text-emerald-400 leading-relaxed">
+                      Los feriados que agregues aquí solo aplican para este año.
+                      Al cambiar de gestión, se borrarán y deberás registrar los
+                      nuevos.
+                    </p>
                   </div>
-                  <p className="text-xs md:text-sm text-emerald-700 dark:text-emerald-400 leading-relaxed">
-                    Los feriados que agregues aquí solo aplican para este año.
-                    Al cambiar de gestión, se borrarán y deberás registrar los
-                    nuevos.
-                  </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -286,10 +279,6 @@ export default function GestorFeriados({
 
               {/* Columna derecha: Lista de feriados agrupados por mes */}
               <div className="flex flex-col gap-4 min-h-0 md:col-span-2">
-                <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 flex-shrink-0">
-                  Feriados del {new Date().getFullYear()}, ({feriados.length})
-                </h3>
-
                 <div className="overflow-y-auto flex-1 min-h-0">
                   {Object.keys(grupos).length === 0 ? (
                     <p className="text-gray-800 dark:text-gray-300 text-center py-4">

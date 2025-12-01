@@ -38,15 +38,19 @@ export default function TablaRegistros({ registros }: TablaRegistrosProps) {
     return fechaObj.toLocaleDateString("es-ES");
   };
 
-  const formatearFechaSimple = (fecha: string) => {
-    const fechaSinZ = fecha.replace(/Z$/, "");
-    const fechaObj = new Date(fechaSinZ);
-    return fechaObj.toLocaleDateString("es-BO", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
+const formatearFechaSimple = (fecha?: string) => {
+  if (!fecha) return ""; // o "—" según quieras mostrar
+
+  const fechaSinZ = fecha.replace(/Z$/, "");
+  const fechaObj = new Date(fechaSinZ);
+
+  return fechaObj.toLocaleDateString("es-BO", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+};
+
 
   const formatearMonto = (monto: number) => {
     return new Intl.NumberFormat("en", {

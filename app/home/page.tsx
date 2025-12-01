@@ -242,27 +242,19 @@ export default function Home() {
     modalidadId: any;
     saving?: boolean;
   }) => {
-    console.log("DATA", datos);
-    console.log("Modalidades Etapas", modalidadesEtapas);
 
     // Filtra modalidadesEtapas por el modalidadId de datos
     const modalidadesEtapaFiltrado = modalidadesEtapas.filter(
       (me) => me.modalidad?.id === datos.modalidadId
     );
 
-    console.log("Modalidades Etapa Filtrado", modalidadesEtapaFiltrado);
     setIsLoadingSaveContratacion(true);
-    const fechasCalculadas = calcularFechas(
-      datos.fechaInicio,
-      datos.modalidadId
-    );
 
-    const fechasCalculadas2 = calcularFechas2(
+
+    const fechasCalculadas = calcularFechas(
       datos.fechaInicio,
       modalidadesEtapaFiltrado
     );
-
-    console.log("Fechas Calculadas", fechasCalculadas2);
 
     const payload = {
       titulo: datos.titulo,
@@ -271,20 +263,7 @@ export default function Home() {
       modalidadId: datos.modalidadId,
       monto: datos.monto,
       usuarioCreacion: user?.email || "desconocido",
-      etapas: fechasCalculadas2,
-      fechaPresentacion: new Date(
-        fechasCalculadas.fechaPresentacion
-      ).toISOString(),
-      fechaApertura: new Date(fechasCalculadas.fechaApertura).toISOString(),
-      fechaAdjudicacion: new Date(
-        fechasCalculadas.fechaAdjudicacion
-      ).toISOString(),
-      fechaPresentacionDocs: new Date(
-        fechasCalculadas.fechaPresentacionDocs
-      ).toISOString(),
-      fechaFirmaContratos: new Date(
-        fechasCalculadas.fechaFirmaContratos
-      ).toISOString(),
+      etapas: fechasCalculadas,
     };
 
     try {
@@ -311,40 +290,7 @@ export default function Home() {
     return new Date(year, month - 1, day);
   }
 
-  const calcularFechas = (fechaInicio: string, modalidadId: number) => {
-    const fecha = parseFechaLocal(fechaInicio);
-    const modalidad = modalidades.find(
-      (m) => Number(m.id) === Number(modalidadId)
-    );
-    if (!modalidad) {
-      throw new Error("Modalidad no encontrada para el ID: " + modalidadId);
-    }
-
-    const config = {
-      presentacion_docs: Number(modalidad.presentacion_docs),
-      apertura: Number(modalidad.apertura),
-      adjudicacion: Number(modalidad.adjudicacion),
-      presentacion: Number(modalidad.presentacion),
-      firma: Number(modalidad.firma),
-    };
-
-    return {
-      fechaPresentacion: agregarDiasHabiles(fecha, config.presentacion),
-      fechaApertura: agregarDiasHabiles(fecha, config.apertura),
-      fechaAdjudicacion: agregarDiasHabiles(fecha, config.adjudicacion),
-      fechaPresentacionDocs: agregarDiasHabiles(
-        fecha,
-        config.presentacion_docs
-      ),
-      fechaFirmaContratos: agregarDiasHabiles(fecha, config.firma),
-    };
-  };
-
-  interface FechasCalculadas {
-    [nombreEtapa: string]: string; // Cambiar a string si agregarDiasHabiles retorna string
-  }
-
-  const calcularFechas2 = (
+  const calcularFechas = (
     fechaInicio: string,
     modalidadesEtapaFiltrado: ModalidadEtapa[]
   ): Record<string, string> => {

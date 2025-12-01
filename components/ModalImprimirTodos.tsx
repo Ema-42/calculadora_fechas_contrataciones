@@ -12,20 +12,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { generateMassRecordPdf } from "@/lib/pdf-utils";
+import { Registro } from "@/app/interfaces/interfaces";
 
-interface Registro {
-  id: number;
-  fechaGeneracion: string;
-  titulo: string;
-  fechaInicio: string;
-  modalidad: { id: number; nombre: string };
-  monto: number;
-  fechaPresentacion: string;
-  fechaApertura: string;
-  fechaAdjudicacion: string;
-  fechaPresentacionDocs: string;
-  fechaFirmaContratos: string;
-}
+ 
 
 interface ModalImprimirTodosProps {
   registros: Registro[];

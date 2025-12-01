@@ -45,16 +45,11 @@ model ModalidadEtapa {
 }
 
 model Contratacion {
-  id                    Int       @id @default(autoincrement())
-  titulo                String?
-  monto                 Float?    @default(0)
-  fechaGeneracion       DateTime?
-  fechaInicio           DateTime?
-  fechaPresentacion     DateTime?
-  fechaApertura         DateTime?
-  fechaAdjudicacion     DateTime?
-  fechaPresentacionDocs DateTime?
-  fechaFirmaContratos   DateTime?
+  id              Int       @id @default(autoincrement())
+  titulo          String?
+  monto           Float?    @default(0)
+  fechaGeneracion DateTime?
+  fechaInicio     DateTime
 
   etapas          Json?
   usuarioCreacion String?
