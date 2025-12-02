@@ -105,8 +105,8 @@ export default function LoginPage() {
         <div className="w-full max-w-md ">
           {/* Card principal */}
           <div className="bg-gray-100 dark:bg-[hsl(217,26%,14%)] rounded-2xl shadow-xl dark:shadow-gray-900/50 overflow-hidden">
-            <div className="bg-slate-600 dark:bg-slate-700 px-8 py-2">
-              <h2 className="text-2xl font-bold text-white text-center uppercase">
+            <div className="bg-emerald-600 dark:bg-emerald-600   px-8 py-2">
+              <h2 className="text-xl font-medium text-white text-center uppercase">
                 Contrataciones
               </h2>
             </div>
@@ -192,7 +192,7 @@ export default function LoginPage() {
               ¿Olvidó su contraseña?{" "}
               <a
                 href="/forgot-password"
-                className="text-gray-600 dark:text-gray-300 font-bold hover:text-gray-800 dark:hover:text-gray-100 underline"
+                className="text-gray-200 dark:text-gray-300 font-bold hover:text-gray-100 dark:hover:text-gray-100 underline"
               >
                 Recuperar acceso
               </a>
