@@ -112,7 +112,7 @@ export default function TablaRegistros({
       const texto = formatearRegistroComoTexto(data);
       await navigator.clipboard.writeText(texto);
       setCopiada(true);
-      setTimeout(() => setCopiada(false), 3000);
+      setTimeout(() => setCopiada(false), 1500);
     } catch (error) {
       console.error("Error al copiar al portapapeles:", error);
     }
@@ -255,11 +255,11 @@ export default function TablaRegistros({
                     <button
                       onClick={(e) => handleDownloadSingle(registro, e)}
                       className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800
-                 text-white px-2 sm:px-3 py-2 text-sm font-medium transition-colors
+                 text-white px-1 sm:px-3 py-2 text-sm font-medium transition-colors
                  flex items-center justify-center gap-2 w-full sm:w-auto"
                       title="Descargar PDF"
                     >
-                      <Download size={16} />
+                      <Download className="hidden sm:block" size={16} />
                       <span>PDF</span>
                     </button>
 
@@ -267,11 +267,11 @@ export default function TablaRegistros({
                     <button
                       onClick={() => handleShare(registro)}
                       className="bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-700 dark:hover:bg-cyan-800
-                 text-white px-2 sm:px-3 py-2 text-sm font-medium transition-colors
+                 text-white px-1 sm:px-3 py-2 text-sm font-medium transition-colors
                  flex items-center justify-center gap-2 w-full sm:w-auto"
                       title="Compartir"
                     >
-                      <Share2 size={16} />
+                      <Share2 className="hidden sm:block" size={16} />
                       <span>Compartir</span>
                     </button>
 
@@ -283,12 +283,8 @@ export default function TablaRegistros({
                  flex items-center justify-center gap-2 w-full sm:w-auto"
                       title="Copiar"
                     >
-                      <Copy size={16} />
-                      {copiada ? (
-                        <span className="font-semibold">Copiado ✓</span>
-                      ) : (
-                        "Copiar"
-                      )}  
+                      <Copy className="hidden sm:block" size={16} />
+                      {copiada ? <span className="">Copiar ✅</span> : "Copiar"}
                     </button>
 
                     {/* Eliminar (solo si corresponde) */}
