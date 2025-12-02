@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import FormularioCalculo from "@/components/FormularioCalculo";
@@ -38,12 +37,9 @@ export default function Home() {
   const [paginationInfo, setPaginationInfo] = useState<PaginationInfo | null>(
     null
   );
-
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingSaveContratacion, setIsLoadingSaveContratacion] =
     useState(false);
-
-  // Estados para paginación y búsqueda
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
@@ -84,7 +80,6 @@ export default function Home() {
         limit: pageLimit.toString(),
       });
 
-      // Solo agregar parámetro search si no está vacío
       if (search.trim()) {
         params.append("search", search.trim());
       }
@@ -96,41 +91,34 @@ export default function Home() {
       setRegistros(data.data);
       setPaginationInfo(data.pagination);
     } catch (error: any) {
-      //console.error("Error al obtener registros:", error?.message || error);
-      //notifyError("Hubo un error al cargar los registros.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Efecto para cargar registros cuando cambian página o limit
   useEffect(() => {
     fetchRegistros(currentPage, limit, searchTerm);
   }, [currentPage, limit]);
 
-  // Función para realizar búsqueda
   const handleSearch = (search: string) => {
     setSearchTerm(search);
     setCurrentPage(1); // Resetear a página 1 al buscar
     fetchRegistros(1, limit, search);
   };
 
-  // Función para limpiar búsqueda
   const handleClearSearch = () => {
     setSearchTerm("");
     setCurrentPage(1);
     fetchRegistros(1, limit, "");
   };
 
-  // Función para cambiar página
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
 
-  // Función para cambiar límite de registros
   const handleLimitChange = (newLimit: number) => {
     setLimit(newLimit);
-    setCurrentPage(1); // Resetear a página 1 cuando cambia el límite
+    setCurrentPage(1);
   };
 
   const fetchModalidades = async () => {
@@ -140,7 +128,6 @@ export default function Home() {
       const data = await res.json();
       setModalidades(data);
     } catch (error: any) {
-      //console.error("Error al obtener modalidades:", error?.message || error);
       //notifyError("Hubo un error al cargar las modalidades.");
     }
   };
@@ -152,7 +139,6 @@ export default function Home() {
       const data = await res.json();
       setFeriados(data);
     } catch (error: any) {
-      //console.error("Error al obtener feriados:", error?.message || error);
       //notifyError("Hubo un error al cargar los feriados.");
     }
   };
@@ -163,9 +149,7 @@ export default function Home() {
       if (!res.ok) throw new Error(`Error al cargar etapas: ${res.status}`);
       const data: Etapa[] = await res.json();
       setEtapas(data); // guarda en la variable de estado
-    } catch (error) {
-      console.error("Error en fetchEtapasTest:", error);
-    }
+    } catch (error) {}
   };
 
   const notifySuccess = (msg: string) => {
@@ -209,29 +193,23 @@ export default function Home() {
 
   const agregarDiasHabiles = (fechaInicio: Date, diasHabiles: number) => {
     const fecha = new Date(fechaInicio);
-    fecha.setDate(fecha.getDate() + 1); // Comenzamos desde el día siguiente
-
+    fecha.setDate(fecha.getDate() + 1);
     let diasAgregados = 0;
 
-    // Avanzamos hasta encontrar el primer día hábil
     while (!esDiaHabil(fecha)) {
       fecha.setDate(fecha.getDate() + 1);
     }
 
-    // Contamos los días hábiles
     while (diasAgregados < diasHabiles) {
-      // Quitamos el -1
       if (esDiaHabil(fecha)) {
         diasAgregados++;
         if (diasAgregados < diasHabiles) {
-          // Solo avanzamos si no hemos llegado al total
           fecha.setDate(fecha.getDate() + 1);
         }
       } else {
         fecha.setDate(fecha.getDate() + 1);
       }
     }
-
     return fecha.toISOString().split("T")[0];
   };
 
@@ -242,14 +220,12 @@ export default function Home() {
     modalidadId: any;
     saving?: boolean;
   }) => {
-
     // Filtra modalidadesEtapas por el modalidadId de datos
     const modalidadesEtapaFiltrado = modalidadesEtapas.filter(
       (me) => me.modalidad?.id === datos.modalidadId
     );
 
     setIsLoadingSaveContratacion(true);
-
 
     const fechasCalculadas = calcularFechas(
       datos.fechaInicio,
@@ -278,7 +254,6 @@ export default function Home() {
       await fetchRegistros(currentPage, limit, searchTerm);
       notifySuccess("Registro creado exitosamente");
     } catch (error) {
-      console.error("Error en agregarRegistro:", error);
       notifyError("Error al crear el registro");
     } finally {
       setIsLoadingSaveContratacion(false);
@@ -306,7 +281,6 @@ export default function Home() {
         ).toISOString();
       }
     });
-
     return fechasCalculadas;
   };
 
@@ -317,9 +291,7 @@ export default function Home() {
         throw new Error(`Error al cargar modalidades-etapas: ${res.status}`);
       const data: ModalidadEtapa[] = await res.json();
       setModalidadesEtapas(data); // guarda en la variable de estado
-    } catch (error) {
-      console.error("Error en fetchModalidadesEtapas:", error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -344,7 +316,6 @@ export default function Home() {
     });
 
     if (!res.ok) {
-      console.error("Error al agregar feriado:", res.statusText);
       return;
     }
     notifySuccess("¡Feriado agregado exitosamente!");
@@ -366,7 +337,6 @@ export default function Home() {
       });
 
       if (!res.ok) {
-        console.error("Error al editar feriado:", res.statusText);
         notifyError("Error al editar feriado");
         return;
       }
@@ -377,16 +347,13 @@ export default function Home() {
       );
       notifySuccess("¡Feriado editado exitosamente!");
     } catch (error) {
-      console.error("Error en editarFeriado:", error);
       notifyError("Error al editar feriado");
     }
   };
 
   const eliminarFeriado = async (id: number) => {
     const res = await fetch(`/api/feriados/${id}`, {
-      // ← Cambio aquí: agregar /${id}
       method: "DELETE",
-      // ← Eliminar body y headers ya que no los necesitas
     });
 
     if (!res.ok) {
@@ -394,7 +361,6 @@ export default function Home() {
       return;
     }
     notifySuccess("¡Feriado eliminado exitosamente!");
-
     setFeriados((prev) => prev.filter((f) => f.id !== id));
   };
 
@@ -410,12 +376,10 @@ export default function Home() {
         notifyError("Error al agregar etapa");
         return;
       }
-
       notifySuccess("¡Etapa agregada exitosamente!");
       const nuevaEtapa = await res.json();
       setEtapas((prev) => [...prev, nuevaEtapa]);
     } catch (error) {
-      console.error("Error al agregar etapa:", error);
       notifyError("Error al agregar etapa");
     }
   };
@@ -425,9 +389,7 @@ export default function Home() {
       const res = await fetch(`/api/etapas/${id}`, {
         method: "DELETE",
       });
-
       if (!res.ok) {
-        console.error("Error al eliminar etapa:", res.statusText);
         notifyError("Error al eliminar etapa");
         return;
       }
@@ -435,7 +397,6 @@ export default function Home() {
       notifySuccess("¡Etapa eliminada exitosamente!");
       setEtapas((prev) => prev.filter((e) => e.id !== id));
     } catch (error) {
-      console.error("Error al eliminar etapa:", error);
       notifyError("Error al eliminar etapa");
     }
   };
@@ -447,9 +408,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nombre }),
       });
-
       if (!res.ok) {
-        console.error("Error al editar etapa:", res.statusText);
         notifyError("Error al editar etapa");
         return;
       }
@@ -460,7 +419,6 @@ export default function Home() {
         prev.map((e) => (e.id === id ? etapaActualizada : e))
       );
     } catch (error) {
-      console.error("Error al editar etapa:", error);
       notifyError("Error al editar etapa");
     }
   };
@@ -469,13 +427,11 @@ export default function Home() {
     try {
       const res = await fetch(`/api/etapas/${id}`);
       if (!res.ok) {
-        console.error("Error al obtener etapa:", res.statusText);
         return null;
       }
       const data: Etapa = await res.json();
       return data;
     } catch (error) {
-      console.error("Error al obtener etapa:", error);
       return null;
     }
   };
@@ -500,16 +456,13 @@ export default function Home() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        console.error("Error al agregar modalidad-etapa:", errorData);
         notifyError(errorData.error || "Error al agregar modalidad-etapa");
         return;
       }
-
       notifySuccess("¡Modalidad-Etapa agregada exitosamente!");
       const nuevaModalidadEtapa = await res.json();
       setModalidadesEtapas((prev) => [...prev, nuevaModalidadEtapa]);
     } catch (error) {
-      console.error("Error al agregar modalidad-etapa:", error);
       notifyError("Error al agregar modalidad-etapa");
     }
   };
@@ -522,15 +475,12 @@ export default function Home() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        console.error("Error al eliminar modalidad-etapa:", errorData);
         notifyError(errorData.error || "Error al eliminar modalidad-etapa");
         return;
       }
-
       notifySuccess("¡Modalidad-Etapa eliminada exitosamente!");
       setModalidadesEtapas((prev) => prev.filter((me) => me.id !== id));
     } catch (error) {
-      console.error("Error al eliminar modalidad-etapa:", error);
       notifyError("Error al eliminar modalidad-etapa");
     }
   };
@@ -554,18 +504,15 @@ export default function Home() {
 
       if (!res.ok) {
         const errorData = await res.json();
-        console.error("Error al editar modalidad-etapa:", errorData);
         notifyError(errorData.error || "Error al editar modalidad-etapa");
         return;
       }
-
       notifySuccess("¡Modalidad-Etapa editada exitosamente!");
       const modalidadEtapaActualizada = await res.json();
       setModalidadesEtapas((prev) =>
         prev.map((me) => (me.id === id ? modalidadEtapaActualizada : me))
       );
     } catch (error) {
-      console.error("Error al editar modalidad-etapa:", error);
       notifyError("Error al editar modalidad-etapa");
     }
   };
@@ -579,19 +526,15 @@ export default function Home() {
           nombre,
         }),
       });
-
       if (!res.ok) {
         const errorData = await res.json();
-        console.error("Error al agregar modalidad:", errorData);
         notifyError(errorData.error || "Error al agregar modalidad");
         return;
       }
-
       notifySuccess("¡Modalidad agregada exitosamente!");
       const nuevaModalidad = await res.json();
       setModalidades((prev) => [...prev, nuevaModalidad]);
     } catch (error) {
-      console.error("Error al agregar modalidad:", error);
       notifyError("Error al agregar modalidad");
     }
   };
@@ -601,10 +544,8 @@ export default function Home() {
       const res = await fetch(`/api/modalidades/${id}`, {
         method: "DELETE",
       });
-
       if (!res.ok) {
         const errorData = await res.json();
-        console.error("Error al eliminar modalidad:", errorData);
         notifyError(errorData.error || "Error al eliminar modalidad");
         return;
       }
@@ -612,15 +553,12 @@ export default function Home() {
       notifySuccess("¡Modalidad eliminada exitosamente!");
       setModalidades((prev) => prev.filter((m) => m.id !== id));
     } catch (error) {
-      console.error("Error al eliminar modalidad:", error);
       notifyError("Error al eliminar modalidad");
     }
   };
 
   const editarModalidad = async (id: number, nombre: string) => {
     try {
-      console.log(nombre);
-
       const res = await fetch(`/api/modalidades/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -628,10 +566,8 @@ export default function Home() {
           nombre,
         }),
       });
-
       if (!res.ok) {
         const errorData = await res.json();
-        console.error("Error al editar modalidad:", errorData);
         notifyError(errorData.error || "Error al editar modalidad");
         return;
       }
@@ -642,52 +578,58 @@ export default function Home() {
         prev.map((m) => (m.id === id ? modalidadActualizada : m))
       );
     } catch (error) {
-      console.error("Error al editar modalidad:", error);
       notifyError("Error al editar modalidad");
     }
+  };
+  const eliminarRegistro = async (id: number) => {
+    setRegistros((prev) => prev.filter((r) => r.id !== id));
   };
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-[hsl(217,26%,12%)]">
       <Navbar />
-      <main className="container mx-auto px-4 py-6 ">
-        <div className="flex flex-wrap items-start">
-          <GestorFeriados
-            feriados={feriados}
-            onAgregar={agregarFeriado}
-            onEditar={editarFeriado}
-            onEliminar={eliminarFeriado}
-          />
-          <GestionarEtapas
-            etapas={etapas}
-            onAgregar={agregarEtapa}
-            onEliminar={eliminarEtapa}
-            onEditar={editarEtapa}
-            obtenerUno={obtenerEtapa}
-          />
-          <GestionarModalidades
-            modalidades={modalidades}
-            onAgregar={agregarModalidad}
-            onEliminar={eliminarModalidad}
-            onEditar={editarModalidad}
-          />
-          <GestionarModalidadesEtapas
-            modalidades={modalidades}
-            etapas={etapas}
-            modalidadesEtapas={modalidadesEtapas}
-            onAgregar={agregarModalidadEtapa}
-            onEliminar={eliminarModalidadEtapa}
-            onEditar={editarModalidadEtapa}
-          />
-        </div>
-
+      <main className="container mx-auto px-4 py-6">
+        <details className="mb-6 bg-white dark:bg-[hsl(217,26%,18%)] rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+          <summary className="px-4 py-3  hover:rounded-lg cursor-pointer font-semibold text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-[hsl(217,26%,22%)]  flex items-center justify-between">
+            <span>Menú de Configuración</span>
+            <span className="text-gray-400">▼</span>
+          </summary>
+          <div className="px-4">
+            <GestorFeriados
+              feriados={feriados}
+              onAgregar={agregarFeriado}
+              onEditar={editarFeriado}
+              onEliminar={eliminarFeriado}
+            />
+            <GestionarEtapas
+              etapas={etapas}
+              onAgregar={agregarEtapa}
+              onEliminar={eliminarEtapa}
+              onEditar={editarEtapa}
+              obtenerUno={obtenerEtapa}
+            />
+            <GestionarModalidades
+              modalidades={modalidades}
+              onAgregar={agregarModalidad}
+              onEliminar={eliminarModalidad}
+              onEditar={editarModalidad}
+            />
+            <GestionarModalidadesEtapas
+              modalidades={modalidades}
+              etapas={etapas}
+              modalidadesEtapas={modalidadesEtapas}
+              onAgregar={agregarModalidadEtapa}
+              onEliminar={eliminarModalidadEtapa}
+              onEditar={editarModalidadEtapa}
+            />
+          </div>
+        </details>
         <div className="space-y-4">
           <FormularioCalculo
             onSubmit={agregarRegistro}
             modalidades={modalidades}
             loading={isLoadingSaveContratacion}
           />
-
           <div className="space-y-4">
             <ListadoRegistros
               registros={registros}
@@ -697,12 +639,12 @@ export default function Home() {
               onLimitChange={handleLimitChange}
               onSearch={handleSearch}
               onClearSearch={handleClearSearch}
+              onEliminar={eliminarRegistro}
               searchTerm={searchTerm}
             />
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );

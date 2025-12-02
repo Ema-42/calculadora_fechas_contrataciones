@@ -42,6 +42,7 @@ export async function GET(request: Request) {
     // Construir condiciones de búsqueda
     const whereClause = search.trim()
       ? {
+          eliminado: false, // ✅ Agregar filtro de eliminado
           OR: [
             {
               titulo: {
@@ -69,7 +70,7 @@ export async function GET(request: Request) {
               condition.modalidad
           ),
         }
-      : {};
+      : { eliminado: false };
 
     const totalRegistros = await prisma.contratacion.count({
       where: whereClause,
@@ -105,16 +106,13 @@ export async function GET(request: Request) {
         nextPage: hasNextPage ? page + 1 : null,
         prevPage: hasPrevPage ? page - 1 : null,
       },
-      search: search.trim(), // Incluir término de búsqueda en la respuesta
+      search: search.trim(),
     };
-
-    //console.log("Total registros:", response);
 
     return NextResponse.json(response);
   } catch (error: any) {
     console.error("Error en GET /contratacion:", error?.message || error);
 
-    // Diferentes tipos de errores
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "Error de base de datos" },

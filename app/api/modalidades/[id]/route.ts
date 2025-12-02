@@ -111,7 +111,7 @@ export async function PATCH(
         NOT: { id },
       },
     });
-    console.log("BODY en el ser: ", req.body);
+ 
 
     if (existente) {
       return NextResponse.json(

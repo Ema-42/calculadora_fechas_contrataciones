@@ -197,13 +197,13 @@ export default function GestorFeriados({
 
   return (
     <>
-      <div className="w-1/3 pr-2 md:w-1/5 pb-4 md:pr-2">
-        <button
-          onClick={() => setModalAbierto(true)}
-          className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-1 py-2 rounded-lg font-medium transition-colors flex items-center justify-center shadow-md dark:shadow-gray-900/50"
-        >
-          <Calendar className="mr-2 hidden md:block" size={20} />
-          FERIADOS
+      <div
+        className="py-2 my-2 md:pr-2 cursor-pointer bg-gray-200/55 hover:bg-red-600/10 dark:bg-[hsl(217,26%,16%)]  dark:text-white dark:hover:bg-gray-900 rounded-lg px-3 "
+        onClick={() => setModalAbierto(true)}
+      >
+        <button className=" text-gray-800 dark:text-white  transition-colors flex items-center justify-center">
+          <Calendar className="mr-4 text-red-600 dark:text-white" size={25} />
+          Feriados
         </button>
       </div>
 
@@ -213,7 +213,7 @@ export default function GestorFeriados({
             <div className="sticky top-0 bg-green-600 dark:bg-green-700 px-6 py-4 rounded-t-lg flex items-center justify-between z-10 flex-shrink-0">
               <div>
                 <h2 className="text-xl font-semibold text-white flex items-center">
-                  <Calendar className="mr-2 text-white" size={24} />
+                  <Calendar className="mr-2 text-white " size={24} />
                   Gestionar Feriados
                 </h2>
               </div>

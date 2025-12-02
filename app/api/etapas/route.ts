@@ -28,7 +28,6 @@ export async function GET(req: Request) {
 
     return NextResponse.json(registros);
   } catch (error: any) {
-    console.error("Error en GET /etapas:", error?.message || error);
 
     if (error.code === "P2002") {
       return NextResponse.json(

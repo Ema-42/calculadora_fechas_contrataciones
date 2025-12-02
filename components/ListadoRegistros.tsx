@@ -1,14 +1,14 @@
 "use client";
 
 import type React from "react";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Search, FileText } from "lucide-react";
 import TablaRegistros from "./TablaRegistros";
 import Paginacion from "./Paginacion";
 import ModalImprimirTodos from "./ModalImprimirTodos";
 import LoadingSpinner from "./LoadingSpinner";
 import { Registro } from "@/app/interfaces/interfaces";
-
+import { showToast } from "nextjs-toast-notify";
 
 interface PaginationInfo {
   currentPage: number;
@@ -29,6 +29,7 @@ interface ListadoRegistrosProps {
   onLimitChange: (limit: number) => void;
   onSearch: (search: string) => void;
   onClearSearch: () => void;
+  onEliminar: (id: number) => void;
   searchTerm: string;
 }
 
@@ -41,6 +42,7 @@ export default function ListadoRegistros({
   onSearch,
   onClearSearch,
   searchTerm,
+  onEliminar,
 }: ListadoRegistrosProps) {
   const [busqueda, setBusqueda] = useState("");
   const [mostrarModalPDF, setMostrarModalPDF] = useState(false);
@@ -56,6 +58,28 @@ export default function ListadoRegistros({
     if (!valor.trim()) {
       onClearSearch();
     }
+  };
+
+  const notifySuccess = (msg: string) => {
+    showToast.success(msg, {
+      duration: 2000,
+      progress: true,
+      position: "top-right",
+      transition: "bounceIn",
+      icon: "",
+      sound: true,
+    });
+  };
+
+  const notifyError = (msg: string) => {
+    showToast.error(msg, {
+      duration: 2000,
+      progress: true,
+      position: "top-right",
+      transition: "bounceIn",
+      icon: "",
+      sound: true,
+    });
   };
 
   useEffect(() => {
@@ -83,6 +107,25 @@ export default function ListadoRegistros({
   const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = Number(e.target.value);
     onLimitChange(value);
+  };
+
+  const eliminarContratacion = async (id: number) => {
+    try {
+      const res = await fetch(`/api/contrataciones/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        notifyError(errorData.error || "Error al eliminar modalidad");
+        return;
+      }
+      onEliminar(id);
+
+      notifySuccess("¡Modalidad eliminada exitosamente!");
+    } catch (error) {
+      notifyError("Error al eliminar modalidad");
+    }
   };
 
   return (
@@ -151,7 +194,10 @@ export default function ListadoRegistros({
         </div>
       ) : (
         <>
-          <TablaRegistros registros={registros} />
+          <TablaRegistros
+            registros={registros}
+            onEliminar={eliminarContratacion}
+          />
 
           {paginationInfo && paginationInfo.totalPages > 1 && (
             <div className="mt-6">
