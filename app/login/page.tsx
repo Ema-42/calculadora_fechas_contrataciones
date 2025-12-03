@@ -92,7 +92,7 @@ export default function LoginPage() {
         />
 
         {/* Overlay con gradiente */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-600/90 via-red-700/85 to-red-900/90 dark:from-slate-900/95 dark:via-slate-800/90 dark:to-red-900/85" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/95 " />
 
         {/* Contenido del panel izquierdo */}
         <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
