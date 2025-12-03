@@ -39,10 +39,10 @@ export async function GET(request: Request) {
 
     const offset = (page - 1) * limit;
 
-    // Construir condiciones de búsqueda
+  
     const whereClause = search.trim()
       ? {
-          eliminado: false, // ✅ Agregar filtro de eliminado
+          eliminado: false, 
           OR: [
             {
               titulo: {

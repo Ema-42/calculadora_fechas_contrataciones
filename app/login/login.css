@@ -1,0 +1,6 @@
+/* Remove animated background if it exists, this file can be empty or minimal */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

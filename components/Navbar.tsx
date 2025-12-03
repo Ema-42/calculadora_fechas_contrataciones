@@ -113,7 +113,7 @@ export default function Navbar() {
 
         {/* Navigation Bar */}
         <nav className="bg-red-600 text-white shadow-2xl border-t border-red-700">
-          <div className="flex items-center justify-around h-20 px-2">
+          <div className="flex items-center justify-around h-16 px-2">
             {/* Home */}
             <button
               onClick={handleHomeClick}
