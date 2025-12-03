@@ -35,9 +35,7 @@ export default function FormularioCalculo({
       alert("Por favor complete todos los campos requeridos");
       return;
     }
-
     const tituloEnMayusculas = titulo.toUpperCase();
-
     onSubmit({
       titulo: tituloEnMayusculas,
       fechaInicio,
@@ -46,7 +44,6 @@ export default function FormularioCalculo({
       saving: true,
     });
 
-    // Limpiar formulario
     setTitulo("");
     setFechaInicio("");
     setMonto("");

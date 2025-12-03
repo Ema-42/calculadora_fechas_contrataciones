@@ -130,7 +130,7 @@ export default function LoginPage() {
       </div>
 
       {/* Panel Derecho - Formulario de Login (25% en desktop) */}
-      <div className="flex-1 lg:w-2/5 flex items-center justify-center p-6 lg:p-8 bg-white dark:bg-slate-900">
+      <div className="flex-1 lg:w-2/5 flex items-center justify-center p-6 lg:p-8 bg-white dark:bg-[hsl(217,26%,12%)]">
         <div className="w-full max-w-sm">
           {/* Logo en móvil */}
           <div className="lg:hidden flex justify-center mb-8">
@@ -173,7 +173,7 @@ export default function LoginPage() {
                   type="email"
                   id="username"
                   name="username"
-                  className="block w-full pl-12 pr-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent transition-all duration-200 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                  className="block w-full pl-12 pr-4 py-3.5 border border-gray-300  dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:border-transparent transition-all duration-200 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                   placeholder="tu@email.com"
                   required
                 />

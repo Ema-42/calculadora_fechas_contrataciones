@@ -179,7 +179,7 @@ export default function Navbar() {
       {/* Logout Modal */}
       {openLogout && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-sm mx-4">
+          <div className="bg-white dark:bg-[hsl(217,26%,18%)] rounded-lg p-6 max-w-sm mx-4">
             <h2 className="text-lg font-bold mb-4">Confirmar cierre de sesión</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-6">¿Deseas cerrar sesión?</p>
             <div className="flex gap-3 justify-end">
