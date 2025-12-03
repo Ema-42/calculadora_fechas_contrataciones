@@ -123,30 +123,27 @@ export async function GET(request: Request) {
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
-    );
+    );  
   }
 }
-
 export async function POST(req: Request) {
   try {
     const cookieHeader = req.headers.get("cookie");
     const cookies = parse(cookieHeader || "");
     const token = cookies.myToken;
-
-    // Verificar si existe el token
+    
     if (!token) {
       return NextResponse.json(
         { error: "Token no proporcionado" },
         { status: 401 }
       );
     }
-
-    // Verificar la validez del token
+    
     const { ok } = verifyToken(token);
     if (!ok) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
     }
-
+    
     const body = await req.json();
     const {
       titulo,
@@ -157,7 +154,16 @@ export async function POST(req: Request) {
       usuarioCreacion,
       etapas,
     } = body;
-
+    
+    console.log("ETAPAS originales:", etapas);
+    
+    // Transformar etapas de objeto a array de arrays ordenado por fecha
+    const etapasTransformadas: [string, string][] = Object.entries(etapas)
+      .map(([nombre, fecha]) => [nombre, fecha as string] as [string, string])
+      .sort((a, b) => new Date(a[1]).getTime() - new Date(b[1]).getTime());
+    
+    console.log("ETAPAS transformadas:", etapasTransformadas);
+    
     const nueva = await prisma.contratacion.create({
       data: {
         titulo,
@@ -166,25 +172,25 @@ export async function POST(req: Request) {
         modalidadId,
         monto,
         usuarioCreacion,
-        etapas,
+        etapas: etapasTransformadas as any, // o usar JSON.parse(JSON.stringify(etapasTransformadas))
       },
       include: {
         modalidad: true,
       },
     });
-
+    
+    console.log("Nueva contratacion creada:", nueva);
     return NextResponse.json(nueva);
   } catch (error: any) {
     console.error("Error en POST /contratacion:", error?.message || error);
-
-    // Diferentes tipos de errores
+    
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "Error de base de datos" },
         { status: 500 }
       );
     }
-
+    
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

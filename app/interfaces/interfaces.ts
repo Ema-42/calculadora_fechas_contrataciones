@@ -12,7 +12,7 @@ export interface Registro {
   modalidad: { id: number; nombre: string };
   monto: number;
   usuarioCreacion: string;
-  etapas: Record<string, string>;
+  etapas: [string, string][]; // Array de tuplas [nombre, fecha]
 }
 
 export interface Etapa {

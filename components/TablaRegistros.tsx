@@ -49,8 +49,6 @@ export default function TablaRegistros({
     return fechaObj.toLocaleDateString("es-ES");
   };
 
-  console.log("REGISTROS", registros);
-
   const handleOpenModal = (id: number, nombre: string) => {
     setItemSeleccionado(id);
     setItemNombreSeleccionado(nombre);
@@ -98,11 +96,13 @@ export default function TablaRegistros({
 `;
 
     // Agregar dinámicamente las etapas que existan
-    if (registro.etapas && Object.keys(registro.etapas).length > 0) {
-      Object.entries(registro.etapas).forEach(([nombreEtapa, fecha]) => {
-        texto += `📍 ${nombreEtapa}: ${formatearFechaSimple(
-          fecha as string
-        )}\n`;
+    if (
+      registro.etapas &&
+      Array.isArray(registro.etapas) &&
+      registro.etapas.length > 0
+    ) {
+      registro.etapas.forEach(([nombreEtapa, fecha]: [string, string]) => {
+        texto += `📍 ${nombreEtapa}: ${formatearFechaSimple(fecha)}\n`;
       });
     }
 
@@ -226,30 +226,23 @@ export default function TablaRegistros({
                     </p>
                   </div>
                 </div>
-
-                {/* Renderizado dinámico de etapas */}
-                {registro.etapas && Object.keys(registro.etapas).length > 0 && (
+                {registro.etapas && registro.etapas.length > 0 && (
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mt-3">
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-700 dark:text-gray-300">
-                      {Object.entries(registro.etapas)
-                        .sort(
-                          (a, b) =>
-                            new Date(a[1]).getTime() - new Date(b[1]).getTime()
-                        ) //Ordenar ascendente
-                        .map(([nombreEtapa, fecha]) => (
-                          <li key={nombreEtapa} className="flex items-center">
-                            <CalendarCheck
-                              className="mr-2 text-gray-500 dark:text-gray-400"
-                              size={16}
-                            />
-                            <strong className="text-gray-800 dark:text-gray-200">
-                              {nombreEtapa}:
-                            </strong>{" "}
-                            <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
-                              {formatearFechaSimple(fecha as string)}
-                            </span>
-                          </li>
-                        ))}
+                      {registro.etapas.map(([nombreEtapa, fecha]) => (
+                        <li key={nombreEtapa} className="flex items-center">
+                          <CalendarCheck
+                            className="mr-2 text-gray-500 dark:text-gray-400"
+                            size={16}
+                          />
+                          <strong className="text-gray-800 dark:text-gray-200">
+                            {nombreEtapa}:
+                          </strong>{" "}
+                          <span className="ml-2 px-3 py-0.5 bg-green-100 dark:bg-green-900/40 border border-green-400 dark:border-green-700 text-green-800 dark:text-green-200 rounded-full text-sm font-semibold">
+                            {formatearFechaSimple(fecha)}
+                          </span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 )}

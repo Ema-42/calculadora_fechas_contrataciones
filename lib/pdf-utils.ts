@@ -28,14 +28,14 @@ const formatearFecha = (fecha: string, includeTime = false) => {
 const formatearFechaSimple = (fecha: string) => {
   // Si la fecha ya está en formato YYYY-MM-DD sin hora, parsearla directamente
   if (fecha.match(/^\d{4}-\d{2}-\d{2}$/)) {
-    const [year, month, day] = fecha.split('-').map(Number);
+    const [year, month, day] = fecha.split("-").map(Number);
     return new Date(year, month - 1, day).toLocaleDateString("es-BO", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
     });
   }
-  
+
   // Para fechas con hora (ISO format)
   const fechaSinZ = fecha.replace(/Z$/, "");
   const fechaObj = new Date(fechaSinZ);
@@ -54,21 +54,35 @@ const formatearMonto = (monto: number) => {
   }).format(monto);
 };
 
-// Función para obtener todas las etapas únicas de todos los registros
+// Función para obtener todas las etapas únicas de todos los registros ORDENADAS POR FECHA
 const obtenerEtapasUnicas = (registros: Registro[]): string[] => {
-  const etapasSet = new Set<string>();
+  const etapasMap = new Map<string, Date>();
+
+  // Recolectar todas las etapas con su fecha más temprana
   registros.forEach((registro) => {
-    if (registro.etapas) {
-      Object.keys(registro.etapas).forEach((etapa) => etapasSet.add(etapa));
+    if (registro.etapas && Array.isArray(registro.etapas)) {
+      registro.etapas.forEach(([nombreEtapa, fecha]) => {
+        const fechaDate = new Date(fecha);
+        if (
+          !etapasMap.has(nombreEtapa) ||
+          fechaDate < etapasMap.get(nombreEtapa)!
+        ) {
+          etapasMap.set(nombreEtapa, fechaDate);
+        }
+      });
     }
   });
-  return Array.from(etapasSet).sort();
+
+  // Ordenar por fecha y devolver solo los nombres
+  return Array.from(etapasMap.entries())
+    .sort((a, b) => a[1].getTime() - b[1].getTime())
+    .map(([nombre]) => nombre);
 };
 
 // Función para obtener los datos y columnas de la tabla para jsPDF-AutoTable
 const getPdfTableData = (registros: Registro[]) => {
   const etapasUnicas = obtenerEtapasUnicas(registros);
-  
+
   const tableColumn = [
     "ID",
     "Título",
@@ -78,7 +92,7 @@ const getPdfTableData = (registros: Registro[]) => {
     "F. Inicio",
     ...etapasUnicas, // Agregar columnas dinámicas de etapas
   ];
-  
+
   const tableRows: any[] = [];
 
   registros.forEach((registro) => {
@@ -90,16 +104,19 @@ const getPdfTableData = (registros: Registro[]) => {
       formatearFecha(registro.fechaGeneracion, true),
       formatearFechaSimple(registro.fechaInicio),
     ];
-    
+
     // Agregar las fechas de las etapas dinámicamente
     etapasUnicas.forEach((etapa) => {
-      const fechaEtapa = registro.etapas?.[etapa];
+      const etapaEncontrada = registro.etapas?.find(
+        ([nombre]) => nombre === etapa
+      );
+      const fechaEtapa = etapaEncontrada ? etapaEncontrada[1] : null;
       registroData.push(fechaEtapa ? formatearFechaSimple(fechaEtapa) : "N/A");
     });
-    
+
     tableRows.push(registroData);
   });
-  
+
   return { tableColumn, tableRows };
 };
 
@@ -158,7 +175,7 @@ export const generateSingleRecordPdf = (
   const title = "DETALLE DE REGISTRO DE CONTRATACIÓN";
   const titleX = doc.internal.pageSize.width / 2;
   doc.text(title, titleX, y, { align: "center" });
-  
+
   const titleWidth = doc.getTextWidth(title);
   const lineX1 = titleX - titleWidth / 2;
   const lineX2 = titleX + titleWidth / 2;
@@ -235,9 +252,13 @@ export const generateSingleRecordPdf = (
 
   // Construir array de fechas dinámicamente desde registro.etapas
   const dates: string[][] = [];
-  if (registro.etapas && Object.keys(registro.etapas).length > 0) {
-    Object.entries(registro.etapas).forEach(([nombreEtapa, fecha]) => {
-      dates.push([nombreEtapa, formatearFechaSimple(String(fecha))]);
+  if (
+    registro.etapas &&
+    Array.isArray(registro.etapas) &&
+    registro.etapas.length > 0
+  ) {
+    registro.etapas.forEach(([nombreEtapa, fecha]) => {
+      dates.push([nombreEtapa, formatearFechaSimple(fecha)]);
     });
   }
 
@@ -332,15 +353,13 @@ export const generateSingleRecordPdf = (
     }
   }
 };
-
-// Generar PDF para múltiples registros
 export const generateMassRecordPdf = (
   registros: Registro[],
   action: "print" | "download",
   fechaInicioRango?: Date,
   fechaFinRango?: Date
 ) => {
-  const doc = new jsPDF({ format: "letter" });
+  const doc = new jsPDF({ format: "letter", orientation: "landscape" }); // Cambio a horizontal para más espacio
 
   doc.setFontSize(18);
   doc.text("Reporte de Registros de Contratación", 14, 20);
@@ -370,6 +389,35 @@ export const generateMassRecordPdf = (
   if (action === "download") {
     doc.save("registros_contratacion.pdf");
   } else {
-    doc.output("dataurlnewwindow");
+    const pdfDataUri = doc.output("datauristring");
+    const newWindow = window.open("", "_blank");
+    if (newWindow) {
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>Reporte de Registros de Contratación</title>
+            <style>
+              body { margin: 0; overflow: hidden; }
+              iframe { border: none; width: 100vw; height: 100vh; }
+            </style>
+          </head>
+          <body>
+            <iframe src="${pdfDataUri}"></iframe>
+            <script>
+              document.querySelector('iframe').onload = function() {
+                try {
+                  this.contentWindow.print();
+                } catch (e) {
+                  console.error("Error al imprimir:", e);
+                  alert("No se pudo abrir el diálogo de impresión. Por favor, intente descargar el PDF.");
+                }
+              };
+            </script>
+          </body>
+        </html>
+      `);
+      newWindow.document.close();
+    }
   }
 };
+
