@@ -7,24 +7,17 @@ export async function GET(req: Request) {
     const cookieHeader = req.headers.get("cookie");
     const cookies = parse(cookieHeader || "");
     const token = cookies.myToken;
-
-    // Verificar si existe el token
     if (!token) {
       return NextResponse.json(
         { error: "Token no proporcionado" },
         { status: 401 }
       );
     }
-
-    // Verificar la validez del token
     const { ok } = verifyToken(token);
     if (!ok) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
     }
-
-    // Si el token es válido, proceder con la consulta
     const year = new Date().getFullYear();
-
     const registros = await prisma.feriado.findMany({
       where: {
         fecha: {
@@ -41,15 +34,12 @@ export async function GET(req: Request) {
     return NextResponse.json(registros);
   } catch (error: any) {
     console.error("Error en GET /feriados:", error?.message || error);
-
-    // Diferentes tipos de errores
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "Error de base de datos" },
         { status: 500 }
       );
     }
-
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }
@@ -62,8 +52,6 @@ export async function POST(req: Request) {
     const cookieHeader = req.headers.get("cookie");
     const cookies = parse(cookieHeader || "");
     const token = cookies.myToken;
-
-    // Verificar si existe el token
     if (!token) {
       return NextResponse.json(
         { error: "Token no proporcionado" },
@@ -71,15 +59,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Verificar la validez del token
     const { ok } = verifyToken(token);
     if (!ok) {
       return NextResponse.json({ error: "Token inválido" }, { status: 401 });
     }
-
     const { nombre, fecha } = await req.json();
-
-    // Validaciones básicas
     if (!nombre || !fecha) {
       return NextResponse.json(
         { error: "El nombre y la fecha son obligatorios" },
@@ -87,7 +71,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Aseguramos que fecha sea un objeto Date válido
     const fechaFormateada = new Date(fecha);
     if (isNaN(fechaFormateada.getTime())) {
       return NextResponse.json(
@@ -96,27 +79,23 @@ export async function POST(req: Request) {
       );
     }
 
-    // Crear registro
     const nuevoFeriado = await prisma.feriado.create({
       data: {
         nombre,
-        fecha: fechaFormateada, // Prisma acepta Date para datetime
-        eliminado: false, // por defecto en falso
+        fecha: fechaFormateada, 
+        eliminado: false,
       },
     });
 
     return NextResponse.json(nuevoFeriado, { status: 201 });
   } catch (error: any) {
     console.error("Error en POST /feriados:", error?.message || error);
-
-    // Diferentes tipos de errores
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "Error de base de datos" },
         { status: 500 }
       );
     }
-
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

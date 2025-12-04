@@ -76,14 +76,13 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Botón de Theme Toggle - Posición absoluta */}
+
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>
 
-      {/* Panel Izquierdo - Imagen de fondo con overlay (75% en desktop) */}
       <div className="hidden lg:flex lg:w-3/5 relative overflow-hidden">
-        {/* Imagen de fondo */}
+      
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{

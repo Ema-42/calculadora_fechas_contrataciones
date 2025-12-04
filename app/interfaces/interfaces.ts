@@ -42,3 +42,15 @@ export interface PaginationInfo {
   nextPage: number | null;
   prevPage: number | null;
 }
+export interface Feriado {
+  id: number;
+  fecha: string;
+  nombre: string;
+}
+
+export interface GestorFeriadosProps {
+  feriados: Feriado[];
+  onAgregar: (fecha: string, nombre: string) => void;
+  onEliminar: (id: number) => void;
+  onEditar: (id: number, fecha: string, nombre: string) => void;
+}

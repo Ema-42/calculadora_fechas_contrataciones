@@ -1,25 +1,11 @@
 "use client";
-
 import type React from "react";
-
 import { useState, useRef, useEffect } from "react";
 import { Calendar, Plus, Trash2, X, Info, Edit, Check } from "lucide-react";
-
 import ConfirmDeleteFeriadoModal from "./ConfirmDeleteFeriadoModal";
-import { showToast } from "nextjs-toast-notify";
-interface Feriado {
-  id: number;
-  fecha: string;
-  nombre: string;
-}
-
-interface GestorFeriadosProps {
-  feriados: Feriado[];
-  onAgregar: (fecha: string, nombre: string) => void;
-  onEliminar: (id: number) => void;
-  onEditar: (id: number, fecha: string, nombre: string) => void;
-}
-
+import { notifyError } from "@/app/home/utils/utils";
+import { Feriado, GestorFeriadosProps } from "@/app/interfaces/interfaces";
+ 
 export default function GestorFeriados({
   feriados,
   onAgregar,
@@ -42,28 +28,6 @@ export default function GestorFeriados({
   const [editLoading, setEditLoading] = useState(false);
   const editInputRef = useRef<HTMLInputElement>(null);
 
-  const notifySuccess = (msg: string) => {
-    showToast.success(msg, {
-      duration: 2000,
-      progress: true,
-      position: "top-right",
-      transition: "bounceIn",
-      icon: "",
-      sound: true,
-    });
-  };
-
-  const notifyError = (msg: string) => {
-    showToast.error(msg, {
-      duration: 2000,
-      progress: true,
-      position: "top-right",
-      transition: "bounceIn",
-      icon: "",
-      sound: true,
-    });
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -71,8 +35,6 @@ export default function GestorFeriados({
       alert("Por favor complete todos los campos");
       return;
     }
-
-    // Verificar si ya existe un feriado en esa fecha
     if (
       feriados.some((feriado) => {
         const fechaBD = new Date(feriado.fecha).toISOString().split("T")[0]; // "YYYY-MM-DD"
@@ -82,7 +44,6 @@ export default function GestorFeriados({
       notifyError(`Ya existe un feriado en la fecha`);
       return;
     }
-
     onAgregar(nuevaFecha, nuevoNombre);
     setNuevaFecha("");
     setNuevoNombre("");
@@ -94,17 +55,6 @@ export default function GestorFeriados({
     const fechaObj = new Date(fechaSinZ);
     return fechaObj.toLocaleDateString("es-BO", {
       weekday: "long",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
-
-  const formatearFechaSinDia = (fecha: string) => {
-    // Eliminar la "Z" para evitar conversión de zona horaria
-    const fechaSinZ = fecha.replace(/Z$/, "");
-    const fechaObj = new Date(fechaSinZ);
-    return fechaObj.toLocaleDateString("es-BO", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -184,7 +134,6 @@ export default function GestorFeriados({
       notifyError("La fecha y nombre no pueden quedar vacíos");
       return;
     }
-
     onEditar(editId, editFecha, editNombre.trim());
     cancelEdit();
   };
@@ -206,7 +155,6 @@ export default function GestorFeriados({
           Feriados
         </button>
       </div>
-
       {modalAbierto && (
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-[hsl(217,26%,14%)] rounded-lg shadow-xl dark:shadow-gray-900/50 w-full max-w-5xl max-h-[90vh] relative flex flex-col">
@@ -224,9 +172,7 @@ export default function GestorFeriados({
                 <X size={24} />
               </button>
             </div>
-
             <div className="px-6 pb-6 pt-6 overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Columna izquierda: Formulario e info */}
               <div className="flex flex-col gap-4 md:col-span-1">
                 <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-3 md:p-4 rounded-lg">
                   <div className="flex items-center space-x-3 ">
@@ -238,7 +184,6 @@ export default function GestorFeriados({
                     </p>
                   </div>
                 </div>
-
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
@@ -252,7 +197,6 @@ export default function GestorFeriados({
                       className="w-full h-[42px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
                       Nombre del Feriado
@@ -266,7 +210,6 @@ export default function GestorFeriados({
                       className="w-full h-[42px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 dark:placeholder-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     />
                   </div>
-
                   <button
                     type="submit"
                     className="w-full h-[42px] bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white px-4 rounded-md font-medium transition-colors flex items-center justify-center"
@@ -276,8 +219,6 @@ export default function GestorFeriados({
                   </button>
                 </form>
               </div>
-
-              {/* Columna derecha: Lista de feriados agrupados por mes */}
               <div className="flex flex-col gap-4 min-h-0 md:col-span-2">
                 <div className="overflow-y-auto flex-1 min-h-0">
                   {Object.keys(grupos).length === 0 ? (
@@ -332,7 +273,6 @@ export default function GestorFeriados({
                                       </>
                                     )}
                                   </div>
-
                                   <div className="flex items-center gap-2 ml-2 flex-shrink-0">
                                     {editId === feriado.id ? (
                                       <>
@@ -395,7 +335,6 @@ export default function GestorFeriados({
           </div>
         </div>
       )}
-
       <ConfirmDeleteFeriadoModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -405,4 +344,3 @@ export default function GestorFeriados({
     </>
   );
 }
-
