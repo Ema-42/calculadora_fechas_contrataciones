@@ -47,6 +47,7 @@ export async function GET(req: Request) {
   }
 }
 
+// POST actualizado con validación de año
 export async function POST(req: Request) {
   try {
     const cookieHeader = req.headers.get("cookie");
@@ -79,6 +80,17 @@ export async function POST(req: Request) {
       );
     }
 
+    // Validar que la fecha sea del año actual
+    const añoActual = new Date().getFullYear();
+    const añoFecha = fechaFormateada.getFullYear();
+    
+    if (añoFecha !== añoActual) {
+      return NextResponse.json(
+        { error: `Solo se pueden agregar feriados del año ${añoActual}` },
+        { status: 400 }
+      );
+    }
+
     const nuevoFeriado = await prisma.feriado.create({
       data: {
         nombre,
@@ -92,8 +104,8 @@ export async function POST(req: Request) {
     console.error("Error en POST /feriados:", error?.message || error);
     if (error.code === "P2002") {
       return NextResponse.json(
-        { error: "Error de base de datos" },
-        { status: 500 }
+        { error: "Ya existe un feriado en esa fecha" },
+        { status: 400 }
       );
     }
     return NextResponse.json(

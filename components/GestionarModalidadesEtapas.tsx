@@ -289,10 +289,10 @@ export default function GestionarModalidadesEtapas({
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-5 md:grid-cols-1 gap-4">
+                  <div className="grid grid-cols-8 md:grid-cols-1 gap-4">
                     <div className="col-span-2 md:col-span-1">
                       <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                        Duración (en días)
+                        Días
                       </label>
                       <input
                         type="number"

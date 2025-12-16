@@ -2,6 +2,7 @@ import { verifyToken } from "@/lib/jwt";
 import { serialize } from "cookie";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+
 export async function POST() {
   try {
     const cookieStore = cookies();
@@ -17,13 +18,15 @@ export async function POST() {
       return NextResponse.json({ message: "Token inválido" }, { status: 401 });
     }
 
-    // Serializar cookie para eliminarla
+    const isProd = process.env.NODE_ENV === "production";
+
+    // Eliminar cookie con los MISMOS atributos del login
     const serialized = serialize("myToken", "", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       path: "/",
-      maxAge: 0, // Eliminar inmediatamente
+      maxAge: 0,
     });
 
     const response = NextResponse.json({
@@ -36,6 +39,7 @@ export async function POST() {
     return response;
   } catch (error) {
     console.error("Error al cerrar sesión:", error);
+
     return NextResponse.json(
       { success: false, message: "Error al cerrar sesión" },
       { status: 500 }

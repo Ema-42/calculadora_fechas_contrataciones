@@ -47,11 +47,14 @@ export default function Home() {
   useEffect(() => {
     const verificarToken = async () => {
       try {
-        const res = await axios.get("/api/auth/verify-token");
+        const res = await axios.get("/api/auth/verify-token", {
+          withCredentials: true,
+        });
+
         if (!res.data.ok) {
           router.push("/login");
         }
-      } catch (error) {
+      } catch {
         router.push("/login");
       }
     };

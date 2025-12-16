@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { Calculator } from "lucide-react";
 import { Modalidad } from "@/app/interfaces/interfaces";
- 
+
 interface FormularioCalculoProps {
   onSubmit: (datos: {
     titulo: string;
@@ -74,7 +74,8 @@ export default function FormularioCalculo({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Fecha de Inicio <span className="text-red-500 dark:text-red-400">*</span>
+              Fecha de Inicio{" "}
+              <span className="text-red-500 dark:text-red-400">*</span>
             </label>
             <input
               type="date"
@@ -91,10 +92,22 @@ export default function FormularioCalculo({
             </label>
             <input
               type="number"
-              step="1"
+              step="0.01"
               min="0"
               value={monto}
-              onChange={(e) => setMonto(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Permitir valores vacíos
+                if (value === "") {
+                  setMonto("");
+                  return;
+                }
+                // máximo 2 decimales
+                const decimalPattern = /^\d+(\.\d{0,2})?$/;
+                if (decimalPattern.test(value)) {
+                  setMonto(value);
+                }
+              }}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,18%)] dark:text-gray-200 dark:placeholder-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
               placeholder="0.00"
             />
@@ -102,7 +115,8 @@ export default function FormularioCalculo({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Modalidad <span className="text-red-500 dark:text-red-400">*</span>
+              Modalidad{" "}
+              <span className="text-red-500 dark:text-red-400">*</span>
             </label>
             <select
               value={modalidad}

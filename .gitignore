@@ -16,9 +16,14 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+docker-compose.yml
+docker-compose.prod.yml
+dockerfile
+dockerfile.prod
+
 # env files
 .env*
-
+.docker_env
 # vercel
 .vercel
 

@@ -1,11 +1,21 @@
 "use client";
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
-import { Calendar, Plus, Trash2, X, Info, Edit, Check } from "lucide-react";
+import {
+  Calendar,
+  Plus,
+  Trash2,
+  X,
+  Info,
+  Edit,
+  Check,
+  RefreshCw,
+} from "lucide-react";
 import ConfirmDeleteFeriadoModal from "./ConfirmDeleteFeriadoModal";
-import { notifyError } from "@/app/home/utils/utils";
+import ConfirmRestaurarFeriadosModal from "./ConfirmRestaurarFeriadosModal";
+import { notifyError, notifySuccess } from "@/app/home/utils/utils";
 import { Feriado, GestorFeriadosProps } from "@/app/interfaces/interfaces";
- 
+
 export default function GestorFeriados({
   feriados,
   onAgregar,
@@ -16,6 +26,7 @@ export default function GestorFeriados({
   const [nuevoNombre, setNuevoNombre] = useState("");
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [modalRestaurarOpen, setModalRestaurarOpen] = useState(false);
   const [feriadoSeleccionado, setFeriadoSeleccionado] = useState<number | null>(
     null
   );
@@ -26,18 +37,34 @@ export default function GestorFeriados({
   const [editFecha, setEditFecha] = useState<string>("");
   const [editNombre, setEditNombre] = useState<string>("");
   const [editLoading, setEditLoading] = useState(false);
+  const [restaurandoFeriados, setRestaurandoFeriados] = useState(false);
   const editInputRef = useRef<HTMLInputElement>(null);
+
+  const añoActual = new Date().getFullYear();
+  const añoAnterior = añoActual - 1;
+
+  // Límites para el input date (solo año actual)
+  const minFecha = `${añoActual}-01-01`;
+  const maxFecha = `${añoActual}-12-31`;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!nuevaFecha || !nuevoNombre) {
-      alert("Por favor complete todos los campos");
+      notifyError("Por favor complete todos los campos");
       return;
     }
+
+    // Validar que la fecha sea del año actual
+    const fechaSeleccionada = new Date(nuevaFecha);
+    if (fechaSeleccionada.getFullYear() !== añoActual) {
+      notifyError(`Solo se pueden agregar feriados del año ${añoActual}`);
+      return;
+    }
+
     if (
       feriados.some((feriado) => {
-        const fechaBD = new Date(feriado.fecha).toISOString().split("T")[0]; // "YYYY-MM-DD"
+        const fechaBD = new Date(feriado.fecha).toISOString().split("T")[0];
         return fechaBD === nuevaFecha;
       })
     ) {
@@ -49,8 +76,39 @@ export default function GestorFeriados({
     setNuevoNombre("");
   };
 
+  const handleRestaurarFeriados = async () => {
+    try {
+      setRestaurandoFeriados(true);
+      const response = await fetch("/api/feriados/restaurar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        notifyError(data.error || "Error al restaurar feriados");
+        return;
+      }
+
+      notifySuccess(
+        `Se restauraron ${data.insertados} feriados. ${data.omitidos} ya existían.`
+      );
+
+      setModalRestaurarOpen(false);
+      // Recargar la página o actualizar el estado de feriados
+      window.location.reload();
+    } catch (error) {
+      console.error("Error al restaurar feriados:", error);
+      notifyError("Error al restaurar feriados");
+    } finally {
+      setRestaurandoFeriados(false);
+    }
+  };
+
   const formatearFechaSimple = (fecha: string) => {
-    // Eliminar la "Z" para evitar conversión de zona horaria
     const fechaSinZ = fecha.replace(/Z$/, "");
     const fechaObj = new Date(fechaSinZ);
     return fechaObj.toLocaleDateString("es-BO", {
@@ -70,7 +128,6 @@ export default function GestorFeriados({
     });
   };
 
-  // Ordenar feriados por fecha y agrupar por mes
   const feriadosOrdenadosYAgrupados = () => {
     const feriadosOrdenados = [...feriados].sort(
       (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
@@ -110,11 +167,10 @@ export default function GestorFeriados({
     nombreActual?: string
   ) => {
     setEditId(id);
-    // Convertir la fecha al formato YYYY-MM-DD para el input type="date"
     if (fechaActual) {
       const fechaSinZ = fechaActual.replace(/Z$/, "");
       const fechaObj = new Date(fechaSinZ);
-      const fechaFormato = fechaObj.toISOString().split("T")[0]; // "YYYY-MM-DD"
+      const fechaFormato = fechaObj.toISOString().split("T")[0];
       setEditFecha(fechaFormato);
     } else {
       setEditFecha("");
@@ -134,6 +190,14 @@ export default function GestorFeriados({
       notifyError("La fecha y nombre no pueden quedar vacíos");
       return;
     }
+
+    // Validar que la fecha editada sea del año actual
+    const fechaEditada = new Date(editFecha);
+    if (fechaEditada.getFullYear() !== añoActual) {
+      notifyError(`Solo se pueden editar feriados del año ${añoActual}`);
+      return;
+    }
+
     onEditar(editId, editFecha, editNombre.trim());
     cancelEdit();
   };
@@ -157,7 +221,7 @@ export default function GestorFeriados({
       </div>
       {modalAbierto && (
         <div className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[hsl(217,26%,14%)] rounded-lg shadow-xl dark:shadow-gray-900/50 w-full max-w-5xl max-h-[90vh] relative flex flex-col">
+          <div className="bg-white dark:bg-[hsl(217,26%,14%)] rounded-lg shadow-xl dark:shadow-gray-900/50 w-full max-w-5xl max-h-[95vh] relative flex flex-col">
             <div className="sticky top-0 bg-green-600 dark:bg-green-700 px-6 py-4 rounded-t-lg flex items-center justify-between z-10 flex-shrink-0">
               <div>
                 <h2 className="text-xl font-semibold text-white flex items-center">
@@ -179,36 +243,38 @@ export default function GestorFeriados({
                     <Info className="h-4 w-4 md:h-5 md:w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                     <p className="text-xs md:text-sm text-emerald-700 dark:text-emerald-400 leading-relaxed">
                       Los feriados que agregues aquí solo aplican para este año.
-                      Al cambiar de gestión, se borrarán y deberás registrar los
-                      nuevos.
                     </p>
                   </div>
                 </div>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                      Fecha
-                    </label>
-                    <input
-                      type="date"
-                      value={nuevaFecha}
-                      onChange={(e) => setNuevaFecha(e.target.value)}
-                      required
-                      className="w-full h-[42px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
-                      Nombre del Feriado
-                    </label>
-                    <input
-                      type="text"
-                      value={nuevoNombre}
-                      onChange={(e) => setNuevoNombre(e.target.value)}
-                      required
-                      placeholder="Ej: Día de la Independencia"
-                      className="w-full h-[42px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 dark:placeholder-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
+                  <div className="flex gap-2 md:flex-col md:gap-4">
+                    <div className="w-[40%] md:w-full">
+                      <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
+                        Fecha
+                      </label>
+                      <input
+                        type="date"
+                        value={nuevaFecha}
+                        onChange={(e) => setNuevaFecha(e.target.value)}
+                        min={minFecha}
+                        max={maxFecha}
+                        required
+                        className="w-full h-[42px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="w-[60%] md:w-full">
+                      <label className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">
+                        Nombre del Feriado
+                      </label>
+                      <input
+                        type="text"
+                        value={nuevoNombre}
+                        onChange={(e) => setNuevoNombre(e.target.value)}
+                        required
+                        placeholder="Ej: Día de la Independencia"
+                        className="w-full h-[42px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 dark:placeholder-gray-500 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      />
+                    </div>
                   </div>
                   <button
                     type="submit"
@@ -218,6 +284,15 @@ export default function GestorFeriados({
                     Agregar Feriado
                   </button>
                 </form>
+
+                <button
+                  onClick={() => setModalRestaurarOpen(true)}
+                  disabled={restaurandoFeriados}
+                  className="w-full h-[42px] bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white px-4 rounded-md font-medium transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <RefreshCw className="mr-2" size={16} />
+                  Restaurar Feriados {añoAnterior}
+                </button>
               </div>
               <div className="flex flex-col gap-4 min-h-0 md:col-span-2">
                 <div className="overflow-y-auto flex-1 min-h-0">
@@ -249,6 +324,8 @@ export default function GestorFeriados({
                                           onChange={(e) =>
                                             setEditFecha(e.target.value)
                                           }
+                                          min={minFecha}
+                                          max={maxFecha}
                                           className="w-full h-[36px] px-3 border border-gray-300 dark:border-gray-700 dark:bg-[hsl(217,26%,20%)] dark:text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                                           disabled={editLoading}
                                         />
@@ -341,6 +418,15 @@ export default function GestorFeriados({
         onConfirm={handleConfirmDelete}
         feriadoNombre={feriadoNombreSeleccionado}
       />
+      <ConfirmRestaurarFeriadosModal
+        open={modalRestaurarOpen}
+        onClose={() => setModalRestaurarOpen(false)}
+        onConfirm={handleRestaurarFeriados}
+        añoAnterior={añoAnterior}
+        añoActual={añoActual}
+        isLoading={restaurandoFeriados}
+      />
     </>
   );
 }
+

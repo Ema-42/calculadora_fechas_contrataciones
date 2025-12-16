@@ -1,4 +1,3 @@
-// app/api/auth/login/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { generateToken } from "@/lib/jwt";
 import { serialize } from "cookie";
@@ -13,16 +12,17 @@ export async function POST(request: NextRequest) {
       email: user.email,
     });
 
-    // Serializar cookie
+    const isProd = process.env.NODE_ENV === "production";
+
+    // Serializar cookie (ajustada por entorno)
     const serialized = serialize("myToken", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: isProd,                    // HTTPS solo en producción
+      sameSite: isProd ? "none" : "lax", // Dev permisivo / Prod compatible SPA
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 1 semana
+      maxAge: 60 * 60 * 24 * 7,           // 1 semana
     });
 
-    // Crear respuesta y agregar cookie
     const response = NextResponse.json({
       success: true,
       message: "Inicio de sesión exitoso",
@@ -37,6 +37,9 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error("Error en login:", error.message);
 
-    return NextResponse.json({ error: error.message }, { status: 401 });
+    return NextResponse.json(
+      { error: error.message },
+      { status: 401 }
+    );
   }
 }
